@@ -1,0 +1,17 @@
+# MultiRisk AI
+
+Intelligent Multi-Disease Future Risk Prediction System Based on Deep Learning
+
+## Diseases
+- Type 2 Diabetes
+- Cardiovascular Disease
+- Alzheimer's / Dementia
+
+## Project Structure
+- `data/` — Dataset storage (diabetes, cardiovascular, alzheimers)
+- `src/` — Source code (disease-specific modules, ML API, backend)
+- `notebooks/` — Jupyter notebooks for EDA and research
+- `models/` — Trained models
+- `tests/` — Unit tests
+- `docs/` — Documentation
+- `config/` — Configuration files
