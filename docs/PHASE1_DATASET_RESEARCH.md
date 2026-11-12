@@ -159,3 +159,7 @@ Research summary for all three diseases.
 - Future versions should integrate true prospective cohorts (Framingham, ARIC, PREVENT-AD)
 
 **Ready to proceed to Phase 2: Scientific Design**
+## Data caveats
+- The Diabetes Health Dataset is synthetic: its Kaggle description says it was generated for educational purposes. Results do not reflect real patients.
+- The CHD dataset should be checked for provenance on its Kaggle page before making claims about it.
+- Both datasets are cross-sectional (current diagnosis), so models estimate current risk, not future risk.
