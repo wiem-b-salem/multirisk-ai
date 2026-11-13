@@ -8,17 +8,34 @@ DATA_PATH = Path(__file__).resolve().parents[2] / "data" / "diabetes" / "diabete
 SEED = 42
 DROP_ALWAYS = ["PatientID", "DoctorInCharge"]
 RISK_ONLY_DROP = ["FastingBloodSugar", "HbA1c"]
+COMPACT_COLUMNS = [
+    "Age",
+    "Gender",
+    "BMI",
+    "FamilyHistoryDiabetes",
+    "FastingBloodSugar",
+    "HbA1c",
+    "SystolicBP",
+    "DiastolicBP",
+    "Hypertension",
+    "PreviousPreDiabetes",
+    "FrequentUrination",
+    "ExcessiveThirst",
+]
 
 
 def load_and_split(feature_set="full", test_size=0.2):
     df = pd.read_csv(DATA_PATH)
     df = df.drop(columns=DROP_ALWAYS)
-    df = pd.get_dummies(df, columns=["Ethnicity"], drop_first=True, dtype=int)
 
-    if feature_set == "risk_only":
-        df = df.drop(columns=RISK_ONLY_DROP)
-    elif feature_set != "full":
-        raise ValueError(f"Unknown feature_set: {feature_set}")
+    if feature_set == "compact":
+        df = df[COMPACT_COLUMNS + ["Diagnosis"]]
+    else:
+        df = pd.get_dummies(df, columns=["Ethnicity"], drop_first=True, dtype=int)
+        if feature_set == "risk_only":
+            df = df.drop(columns=RISK_ONLY_DROP)
+        elif feature_set != "full":
+            raise ValueError(f"Unknown feature_set: {feature_set}")
 
     X = df.drop(columns="Diagnosis")
     y = df["Diagnosis"]

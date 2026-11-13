@@ -25,3 +25,10 @@ models/**/*.keras
 models/**/*.pt
 
 .pytest_cache/
+
+# Node / frontend
+node_modules/
+dist/
+
+backend.db
+*.db

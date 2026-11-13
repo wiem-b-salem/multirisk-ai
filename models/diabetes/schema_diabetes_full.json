@@ -43,7 +43,7 @@
     {
       "name": "BMI",
       "type": "float",
-      "min": 15.027556859806436,
+      "min": 15.025898465763731,
       "max": 39.99881065727365
     },
     {
@@ -72,13 +72,13 @@
       "name": "DietQuality",
       "type": "float",
       "min": 0.0008852575670748,
-      "max": 9.985014297876612
+      "max": 9.99867743633463
     },
     {
       "name": "SleepQuality",
       "type": "float",
       "min": 4.004336024722673,
-      "max": 9.98849305640864
+      "max": 9.989372078498471
     },
     {
       "name": "FamilyHistoryDiabetes",
@@ -146,19 +146,19 @@
       "name": "FastingBloodSugar",
       "type": "float",
       "min": 70.07464912006355,
-      "max": 199.74948407918183
+      "max": 199.93550574521825
     },
     {
       "name": "HbA1c",
       "type": "float",
       "min": 4.003088538729303,
-      "max": 9.989805433810858
+      "max": 9.991192668389376
     },
     {
       "name": "SerumCreatinine",
       "type": "float",
       "min": 0.500565227300702,
-      "max": 4.991133001323912
+      "max": 4.993973737951473
     },
     {
       "name": "BUNLevels",
@@ -253,8 +253,8 @@
     {
       "name": "FatigueLevels",
       "type": "float",
-      "min": 0.0134396880662246,
-      "max": 9.999597183813542
+      "min": 0.0049766567160969,
+      "max": 9.999979333013556
     },
     {
       "name": "BlurredVision",
@@ -289,7 +289,7 @@
     {
       "name": "QualityOfLifeScore",
       "type": "float",
-      "min": 0.079095085680314,
+      "min": 0.0023900012874222,
       "max": 99.78853005449272
     },
     {

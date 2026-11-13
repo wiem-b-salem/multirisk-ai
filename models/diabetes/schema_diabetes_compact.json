@@ -1,0 +1,179 @@
+{
+  "raw_fields": [
+    {
+      "name": "Age",
+      "label": "Age",
+      "unit": "years",
+      "help": "Age in years.",
+      "type": "int",
+      "train_min": 20,
+      "train_max": 90,
+      "valid_min": 18,
+      "valid_max": 100
+    },
+    {
+      "name": "Gender",
+      "label": "Gender",
+      "unit": "",
+      "help": "",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "BMI",
+      "label": "Body mass index (BMI)",
+      "unit": "kg/m2",
+      "help": "Weight in kg divided by height in metres squared.",
+      "type": "float",
+      "train_min": 15.025898465763731,
+      "train_max": 39.99881065727365,
+      "valid_min": 10,
+      "valid_max": 70
+    },
+    {
+      "name": "FamilyHistoryDiabetes",
+      "label": "Family history of diabetes",
+      "unit": "",
+      "help": "Whether a close relative has diabetes.",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "FastingBloodSugar",
+      "label": "Fasting blood sugar",
+      "unit": "",
+      "help": "",
+      "type": "float",
+      "train_min": 70.07464912006355,
+      "train_max": 199.93550574521825,
+      "valid_min": 40,
+      "valid_max": 600
+    },
+    {
+      "name": "HbA1c",
+      "label": "HbA1c",
+      "unit": "",
+      "help": "",
+      "type": "float",
+      "train_min": 4.003088538729303,
+      "train_max": 9.991192668389376,
+      "valid_min": 3,
+      "valid_max": 18
+    },
+    {
+      "name": "SystolicBP",
+      "label": "Systolic blood pressure",
+      "unit": "mm Hg",
+      "help": "The top number of a blood pressure reading.",
+      "type": "int",
+      "train_min": 90,
+      "train_max": 179,
+      "valid_min": 60,
+      "valid_max": 260
+    },
+    {
+      "name": "DiastolicBP",
+      "label": "Diastolic blood pressure",
+      "unit": "mm Hg",
+      "help": "The bottom number of a blood pressure reading.",
+      "type": "int",
+      "train_min": 60,
+      "train_max": 119,
+      "valid_min": 30,
+      "valid_max": 160
+    },
+    {
+      "name": "Hypertension",
+      "label": "Hypertension",
+      "unit": "",
+      "help": "",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "PreviousPreDiabetes",
+      "label": "Previous prediabetes",
+      "unit": "",
+      "help": "",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "FrequentUrination",
+      "label": "Frequent urination",
+      "unit": "",
+      "help": "",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "ExcessiveThirst",
+      "label": "Excessive thirst",
+      "unit": "",
+      "help": "",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    }
+  ],
+  "family_history_field": "FamilyHistoryDiabetes",
+  "population_note": "Trained on a synthetic dataset; not validated on real patients.",
+  "feature_columns": [
+    "Age",
+    "Gender",
+    "BMI",
+    "FamilyHistoryDiabetes",
+    "FastingBloodSugar",
+    "HbA1c",
+    "SystolicBP",
+    "DiastolicBP",
+    "Hypertension",
+    "PreviousPreDiabetes",
+    "FrequentUrination",
+    "ExcessiveThirst"
+  ],
+  "model_file": "final_diabetes_compact.joblib",
+  "scaler_file": "scaler_diabetes_compact.joblib",
+  "model_name": "rf"
+}

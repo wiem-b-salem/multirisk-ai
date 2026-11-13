@@ -1,0 +1,111 @@
+{
+  "cvd": {
+    "sbp": {
+      "label": "Systolic blood pressure",
+      "unit": "mm Hg",
+      "help": "The top number of a blood pressure reading."
+    },
+    "tobacco": {
+      "label": "Cumulative tobacco use",
+      "unit": "kg",
+      "help": "Total tobacco used over a lifetime, not per year."
+    },
+    "ldl": {
+      "label": "LDL cholesterol",
+      "unit": "",
+      "help": "LDL ('bad') cholesterol. The dataset does not state the unit; values look like mmol/L."
+    },
+    "adiposity": {
+      "label": "Adiposity",
+      "unit": "",
+      "help": "A body-fat measure similar to BMI. Not precisely defined in the source dataset."
+    },
+    "famhist": {
+      "label": "Family history of heart disease",
+      "unit": "",
+      "help": "Whether a close relative had ischaemic heart disease."
+    },
+    "typea": {
+      "label": "Type A behavior score",
+      "unit": "points",
+      "help": "Score from the Bortner questionnaire (scale 12-84). 55 or more counted as Type A in the original study."
+    },
+    "obesity": {
+      "label": "Body mass index (BMI)",
+      "unit": "kg/m2",
+      "help": "Weight in kg divided by height in metres squared."
+    },
+    "alcohol": {
+      "label": "Current alcohol consumption",
+      "unit": "",
+      "help": "The dataset does not state the unit."
+    },
+    "age": {
+      "label": "Age",
+      "unit": "years",
+      "help": "Age in years."
+    }
+  },
+  "diabetes": {
+    "Age": {
+      "label": "Age",
+      "unit": "years",
+      "help": "Age in years."
+    },
+    "Gender": {
+      "label": "Gender",
+      "unit": "",
+      "help": ""
+    },
+    "BMI": {
+      "label": "Body mass index (BMI)",
+      "unit": "kg/m2",
+      "help": "Weight in kg divided by height in metres squared."
+    },
+    "FamilyHistoryDiabetes": {
+      "label": "Family history of diabetes",
+      "unit": "",
+      "help": "Whether a close relative has diabetes."
+    },
+    "FastingBloodSugar": {
+      "label": "Fasting blood sugar",
+      "unit": "",
+      "help": ""
+    },
+    "HbA1c": {
+      "label": "HbA1c",
+      "unit": "",
+      "help": ""
+    },
+    "SystolicBP": {
+      "label": "Systolic blood pressure",
+      "unit": "mm Hg",
+      "help": "The top number of a blood pressure reading."
+    },
+    "DiastolicBP": {
+      "label": "Diastolic blood pressure",
+      "unit": "mm Hg",
+      "help": "The bottom number of a blood pressure reading."
+    },
+    "Hypertension": {
+      "label": "Hypertension",
+      "unit": "",
+      "help": ""
+    },
+    "PreviousPreDiabetes": {
+      "label": "Previous prediabetes",
+      "unit": "",
+      "help": ""
+    },
+    "FrequentUrination": {
+      "label": "Frequent urination",
+      "unit": "",
+      "help": ""
+    },
+    "ExcessiveThirst": {
+      "label": "Excessive thirst",
+      "unit": "",
+      "help": ""
+    }
+  }
+}

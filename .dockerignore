@@ -1,0 +1,10 @@
+venv
+node_modules
+data
+results
+.git
+__pycache__
+.pytest_cache
+*.keras
+backend.db
+frontend/dist

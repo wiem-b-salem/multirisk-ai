@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from src.ml_api.main import app
 
 ROOT = Path(__file__).resolve().parents[1]
-FOLDERS = {"cvd": ("cvd", "cardiovascular"), "diabetes": ("diabetes_full", "diabetes")}
+FOLDERS = {"cvd": ("cvd", "cardiovascular"), "diabetes": ("diabetes_compact", "diabetes")}
 client = TestClient(app)
 
 
@@ -21,9 +21,9 @@ def make_payload(disease):
         if field.get("allowed_values"):
             features[field["name"]] = field["allowed_values"][0]
         elif field["type"] == "int":
-            features[field["name"]] = (field["min"] + field["max"]) // 2
+            features[field["name"]] = (field["train_min"] + field["train_max"]) // 2
         else:
-            features[field["name"]] = (field["min"] + field["max"]) / 2
+            features[field["name"]] = (field["train_min"] + field["train_max"]) / 2
     return {"features": features}
 
 
@@ -36,9 +36,19 @@ def test_health():
 def test_valid_cvd_prediction():
     response = client.post("/predict/cvd", json=make_payload("cvd"))
     assert response.status_code == 200
-    probability = response.json()["risk_probability"]
-    assert 0 <= probability <= 1
+    score = response.json()["risk_score"]
+    assert 0 <= score <= 1
     print(json.dumps(response.json(), indent=2))
+
+
+def test_response_fields():
+    response = client.post("/predict/cvd", json=make_payload("cvd"))
+    data = response.json()
+    assert "risk_score" in data
+    assert "score_note" in data
+    assert "factors_note" in data
+    for factor in data["top_factors"]:
+        assert factor["effect"] in {"above_average", "below_average"}
 
 
 def test_valid_diabetes_prediction():
@@ -53,6 +63,13 @@ def test_cvd_missing_famhist():
     assert response.status_code == 422
 
 
+def test_diabetes_missing_family_history():
+    payload = make_payload("diabetes")
+    del payload["features"]["FamilyHistoryDiabetes"]
+    response = client.post("/predict/diabetes", json=payload)
+    assert response.status_code == 422
+
+
 def test_value_out_of_range():
     payload = make_payload("cvd")
     field = next(
@@ -60,8 +77,44 @@ def test_value_out_of_range():
         for field in load_schema("cvd")["raw_fields"]
         if field["type"] in ("int", "float") and not field.get("allowed_values")
     )
-    payload["features"][field["name"]] = field["max"] + 1
+    payload["features"][field["name"]] = field["valid_max"] + 1
     response = client.post("/predict/cvd", json=payload)
+    assert response.status_code == 422
+
+
+def test_cvd_age_out_of_training_range():
+    payload = make_payload("cvd")
+    payload["features"]["age"] = 80
+    response = client.post("/predict/cvd", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert any(item["field"] == "age" for item in data["out_of_training_range"])
+    assert "range_warning" in data
+
+
+def test_cvd_age_out_of_valid_range():
+    payload = make_payload("cvd")
+    payload["features"]["age"] = 150
+    response = client.post("/predict/cvd", json=payload)
+    assert response.status_code == 422
+
+
+def test_diabetes_fasting_blood_sugar_out_of_training_range():
+    payload = make_payload("diabetes")
+    payload["features"]["FastingBloodSugar"] = 300
+    response = client.post("/predict/diabetes", json=payload)
+    assert response.status_code == 200
+    data = response.json()
+    assert any(
+        item["field"] == "FastingBloodSugar" for item in data["out_of_training_range"]
+    )
+    assert "range_warning" in data
+
+
+def test_diabetes_fasting_blood_sugar_out_of_valid_range():
+    payload = make_payload("diabetes")
+    payload["features"]["FastingBloodSugar"] = 700
+    response = client.post("/predict/diabetes", json=payload)
     assert response.status_code == 422
 
 
