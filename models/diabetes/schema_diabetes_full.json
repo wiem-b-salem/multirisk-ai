@@ -1,0 +1,395 @@
+{
+  "raw_fields": [
+    {
+      "name": "Age",
+      "type": "int",
+      "min": 20,
+      "max": 90
+    },
+    {
+      "name": "Gender",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "Ethnicity",
+      "type": "category",
+      "min": 0,
+      "max": 3,
+      "allowed_values": [
+        0,
+        1,
+        2,
+        3
+      ]
+    },
+    {
+      "name": "SocioeconomicStatus",
+      "type": "int",
+      "min": 0,
+      "max": 2
+    },
+    {
+      "name": "EducationLevel",
+      "type": "int",
+      "min": 0,
+      "max": 3
+    },
+    {
+      "name": "BMI",
+      "type": "float",
+      "min": 15.027556859806436,
+      "max": 39.99881065727365
+    },
+    {
+      "name": "Smoking",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "AlcoholConsumption",
+      "type": "float",
+      "min": 0.0009275775604256,
+      "max": 19.99623115398905
+    },
+    {
+      "name": "PhysicalActivity",
+      "type": "float",
+      "min": 0.004088573101747,
+      "max": 9.99389342623643
+    },
+    {
+      "name": "DietQuality",
+      "type": "float",
+      "min": 0.0008852575670748,
+      "max": 9.985014297876612
+    },
+    {
+      "name": "SleepQuality",
+      "type": "float",
+      "min": 4.004336024722673,
+      "max": 9.98849305640864
+    },
+    {
+      "name": "FamilyHistoryDiabetes",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "GestationalDiabetes",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "PolycysticOvarySyndrome",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "PreviousPreDiabetes",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "Hypertension",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "SystolicBP",
+      "type": "int",
+      "min": 90,
+      "max": 179
+    },
+    {
+      "name": "DiastolicBP",
+      "type": "int",
+      "min": 60,
+      "max": 119
+    },
+    {
+      "name": "FastingBloodSugar",
+      "type": "float",
+      "min": 70.07464912006355,
+      "max": 199.74948407918183
+    },
+    {
+      "name": "HbA1c",
+      "type": "float",
+      "min": 4.003088538729303,
+      "max": 9.989805433810858
+    },
+    {
+      "name": "SerumCreatinine",
+      "type": "float",
+      "min": 0.500565227300702,
+      "max": 4.991133001323912
+    },
+    {
+      "name": "BUNLevels",
+      "type": "float",
+      "min": 5.010400860660506,
+      "max": 49.9757282001984
+    },
+    {
+      "name": "CholesterolTotal",
+      "type": "float",
+      "min": 150.05609361917152,
+      "max": 299.99848006216087
+    },
+    {
+      "name": "CholesterolLDL",
+      "type": "float",
+      "min": 50.05825217167597,
+      "max": 199.89873241118545
+    },
+    {
+      "name": "CholesterolHDL",
+      "type": "float",
+      "min": 20.01449412509352,
+      "max": 99.95839350964916
+    },
+    {
+      "name": "CholesterolTriglycerides",
+      "type": "float",
+      "min": 50.15464895017801,
+      "max": 399.8859275432402
+    },
+    {
+      "name": "AntihypertensiveMedications",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "Statins",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "AntidiabeticMedications",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "FrequentUrination",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "ExcessiveThirst",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "UnexplainedWeightLoss",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "FatigueLevels",
+      "type": "float",
+      "min": 0.0134396880662246,
+      "max": 9.999597183813542
+    },
+    {
+      "name": "BlurredVision",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "SlowHealingSores",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "TinglingHandsFeet",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "QualityOfLifeScore",
+      "type": "float",
+      "min": 0.079095085680314,
+      "max": 99.78853005449272
+    },
+    {
+      "name": "HeavyMetalsExposure",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "OccupationalExposureChemicals",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "WaterQuality",
+      "type": "int",
+      "min": 0,
+      "max": 1,
+      "allowed_values": [
+        0,
+        1
+      ]
+    },
+    {
+      "name": "MedicalCheckupsFrequency",
+      "type": "float",
+      "min": 0.0040134703333309,
+      "max": 3.999714985055156
+    },
+    {
+      "name": "MedicationAdherence",
+      "type": "float",
+      "min": 0.0053837596735362,
+      "max": 9.997164754414314
+    },
+    {
+      "name": "HealthLiteracy",
+      "type": "float",
+      "min": 0.0003622487692678,
+      "max": 9.993029038003792
+    }
+  ],
+  "family_history_field": "FamilyHistoryDiabetes",
+  "feature_columns": [
+    "Age",
+    "Gender",
+    "SocioeconomicStatus",
+    "EducationLevel",
+    "BMI",
+    "Smoking",
+    "AlcoholConsumption",
+    "PhysicalActivity",
+    "DietQuality",
+    "SleepQuality",
+    "FamilyHistoryDiabetes",
+    "GestationalDiabetes",
+    "PolycysticOvarySyndrome",
+    "PreviousPreDiabetes",
+    "Hypertension",
+    "SystolicBP",
+    "DiastolicBP",
+    "FastingBloodSugar",
+    "HbA1c",
+    "SerumCreatinine",
+    "BUNLevels",
+    "CholesterolTotal",
+    "CholesterolLDL",
+    "CholesterolHDL",
+    "CholesterolTriglycerides",
+    "AntihypertensiveMedications",
+    "Statins",
+    "AntidiabeticMedications",
+    "FrequentUrination",
+    "ExcessiveThirst",
+    "UnexplainedWeightLoss",
+    "FatigueLevels",
+    "BlurredVision",
+    "SlowHealingSores",
+    "TinglingHandsFeet",
+    "QualityOfLifeScore",
+    "HeavyMetalsExposure",
+    "OccupationalExposureChemicals",
+    "WaterQuality",
+    "MedicalCheckupsFrequency",
+    "MedicationAdherence",
+    "HealthLiteracy",
+    "Ethnicity_1",
+    "Ethnicity_2",
+    "Ethnicity_3"
+  ],
+  "model_file": "final_diabetes_full.joblib",
+  "scaler_file": "scaler_diabetes_full.joblib",
+  "model_name": "rf"
+}

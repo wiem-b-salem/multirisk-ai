@@ -23,3 +23,5 @@ models/**/*.pkl
 models/**/*.h5
 models/**/*.keras
 models/**/*.pt
+
+.pytest_cache/

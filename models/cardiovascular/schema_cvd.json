@@ -1,0 +1,77 @@
+{
+  "raw_fields": [
+    {
+      "name": "sbp",
+      "type": "int",
+      "min": 101,
+      "max": 218
+    },
+    {
+      "name": "tobacco",
+      "type": "float",
+      "min": 0.0,
+      "max": 31.2
+    },
+    {
+      "name": "ldl",
+      "type": "float",
+      "min": 0.98,
+      "max": 15.33
+    },
+    {
+      "name": "adiposity",
+      "type": "float",
+      "min": 6.74,
+      "max": 42.49
+    },
+    {
+      "name": "famhist",
+      "type": "category",
+      "min": null,
+      "max": null,
+      "allowed_values": [
+        "Absent",
+        "Present"
+      ]
+    },
+    {
+      "name": "typea",
+      "type": "int",
+      "min": 13,
+      "max": 78
+    },
+    {
+      "name": "obesity",
+      "type": "float",
+      "min": 17.75,
+      "max": 45.72
+    },
+    {
+      "name": "alcohol",
+      "type": "float",
+      "min": 0.0,
+      "max": 145.29
+    },
+    {
+      "name": "age",
+      "type": "int",
+      "min": 15,
+      "max": 64
+    }
+  ],
+  "family_history_field": "famhist",
+  "feature_columns": [
+    "sbp",
+    "tobacco",
+    "ldl",
+    "adiposity",
+    "famhist",
+    "typea",
+    "obesity",
+    "alcohol",
+    "age"
+  ],
+  "model_file": "final_cvd.joblib",
+  "scaler_file": "scaler_cvd.joblib",
+  "model_name": "logreg"
+}
