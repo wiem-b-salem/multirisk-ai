@@ -1,0 +1,193 @@
+{
+  "raw_fields": [
+    {
+      "name": "Age",
+      "label": "Age",
+      "unit": "years",
+      "help": "Age in years.",
+      "type": "int",
+      "train_min": 60,
+      "train_max": 90,
+      "valid_min": 40,
+      "valid_max": 110
+    },
+    {
+      "name": "Gender",
+      "label": "Gender code",
+      "unit": "",
+      "help": "The dataset codes gender as 0 or 1; coding to be verified on the source page",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "EducationLevel",
+      "label": "Education level",
+      "unit": "",
+      "help": "0 to 3 as coded in the dataset; meaning to be verified on the source page",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 3,
+      "allowed_values": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "BMI",
+      "label": "Body mass index (BMI)",
+      "unit": "kg/m2",
+      "help": "Weight in kg divided by height in metres squared.",
+      "type": "float",
+      "train_min": 15.008851181631059,
+      "train_max": 39.99276746402374,
+      "valid_min": 10,
+      "valid_max": 70
+    },
+    {
+      "name": "FamilyHistoryAlzheimers",
+      "label": "Family history of Alzheimer's disease",
+      "unit": "",
+      "help": "Whether a close relative has or had Alzheimer's disease",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "CardiovascularDisease",
+      "label": "Cardiovascular disease",
+      "unit": "",
+      "help": "Whether the person has been diagnosed with cardiovascular disease.",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "Diabetes",
+      "label": "Diabetes",
+      "unit": "",
+      "help": "Whether the person has been diagnosed with diabetes.",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "Depression",
+      "label": "Depression",
+      "unit": "",
+      "help": "Whether the person has been diagnosed with depression.",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "HeadInjury",
+      "label": "Head injury",
+      "unit": "",
+      "help": "Whether the person has had a head injury",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "Hypertension",
+      "label": "Hypertension",
+      "unit": "",
+      "help": "Whether the person has been diagnosed with hypertension.",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "MMSE",
+      "label": "MMSE score",
+      "unit": "points",
+      "help": "Mini-Mental State Examination score, 0 to 30, higher is better; usually administered by a clinician",
+      "type": "float",
+      "train_min": 0.005312146441700527,
+      "train_max": 29.991380560529063,
+      "valid_min": 0,
+      "valid_max": 30
+    },
+    {
+      "name": "MemoryComplaints",
+      "label": "Memory complaints",
+      "unit": "",
+      "help": "Whether the person or their family reports memory problems",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    }
+  ],
+  "family_history_field": "FamilyHistoryAlzheimers",
+  "population_note": "Trained on a synthetic dataset of 2,149 people aged 60-90; not validated on real patients.",
+  "feature_columns": [
+    "Age",
+    "Gender",
+    "EducationLevel",
+    "BMI",
+    "FamilyHistoryAlzheimers",
+    "CardiovascularDisease",
+    "Diabetes",
+    "Depression",
+    "HeadInjury",
+    "Hypertension",
+    "MMSE",
+    "MemoryComplaints"
+  ],
+  "model_file": "final_alzheimers_compact.joblib",
+  "scaler_file": "scaler_alzheimers_compact.joblib",
+  "model_name": "logreg"
+}
