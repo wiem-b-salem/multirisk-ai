@@ -97,42 +97,51 @@ Research summary for all three diseases.
 ## Disease 3: Alzheimer's / Dementia
 
 ### Candidate Datasets
+- [x] Kaggle Alzheimer's Dataset
 - [ ] PREVENT-AD
 - [ ] WRAP (Wisconsin Registry)
-- [ ] Kaggle Alzheimer's Dataset
 - [ ] Other: ___________
 
-### Selected Dataset: TBD (Not yet downloaded)
+### Selected Dataset: Alzheimer's Disease Dataset (Kaggle)
 
 #### 1. Access & Licensing
-- **Where found:** 
-- **Access requirements:** 
-- **Free/Cost:** 
-- **Academic use permitted:** 
+- **Where found:** Kaggle
+- **Access requirements:** Free (no institutional approval needed)
+- **Free/Cost:** Free
+- **Academic use permitted:** To be verified on the source page
+- **Licence and provenance:** To be verified on the source page
 
 #### 2. Data Dictionary
-- **Link to documentation:** 
-- **Total variables:** 
-- **Sample size:** 
-- **Follow-up duration:** 
+- **Link to documentation:** Kaggle Alzheimer's Disease Dataset page
+- **Total variables:** 35 (34 predictors and `Diagnosis`)
+- **Sample size:** 2,149 records
+- **Note:** Cross-sectional dataset (current diagnosis status, not future prediction)
 
 #### 3. Family History Variables
-- **Variables found:** TBD
+- **Variables found:**
+  - [x] `FamilyHistoryAlzheimers` (0=No, 1=Yes)
+  - Distribution: No=1,607 (75%), Yes=542 (25%)
 
 #### 4. Future Outcome
-- **Target variable:** TBD
-- **Is it a future outcome?** TBD
-- **Prediction horizon:** TBD
+- **Target variable:** `Diagnosis` (0=No Alzheimer's disease, 1=Alzheimer's disease)
+- **Is it a future outcome?** NO — Cross-sectional (current status at a single time point)
+- **Outcome distribution:** No=1,389 (65%), Yes=760 (35%)
+- **Class balance:** Moderate (35% positive class)
 
 #### 5. Data Quality
-- **Missing values:** TBD
-- **Class balance:** TBD
-- **Baseline population characteristics:** TBD
+- **Missing values:** 0 in every column
+- **Class balance:** Acceptable (65-35 split)
+- **Age range:** 60-90 years
+- **Education level:** 0-3 (numeric codes; meaning to be verified on the source page)
+- **Ethnicity:** 0-3 (categorical codes; one-hot encoded in the models)
+- **Identifiers and constants:** `PatientID` is unique per row; `DoctorInCharge` is constant (`XXXConfid`) and is dropped
+- **Other columns:** gender, lifestyle, cardiovascular and comorbidity indicators, cholesterol, MMSE, and cognitive/functional scores
+- **Synthetic-data indicators:** MMSE is nearly evenly spread from 0 to 30 (six bins contain 326-390 rows each), and many continuous columns have one unique value per row. The dataset appears synthetic.
 
 #### 6. Decision
-- **Feasible for this project?** TBD
-- **Why/Why not:** TBD
-- **Next steps:** TBD
+- **Feasible for this project?** YES
+- **Why/Why not:** It has a diagnosis target and a family-history variable, but it is cross-sectional and appears synthetic, so results do not describe real patients
+- **Next steps:** Preprocessing, baseline models, MLP, family-history analysis and honest reporting of the limitations
 
 ---
 
