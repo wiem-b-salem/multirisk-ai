@@ -65,12 +65,12 @@ def main():
     token = json.loads(body)["access_token"]
 
     schemas = {}
-    for disease in ("cvd", "diabetes", "alzheimers"):
+    for disease in ("cvd", "diabetes", "alzheimers", "liver"):
         status, body, _ = request("GET", f"{BACKEND_URL}/schema/{disease}")
         check(f"GET /schema/{disease} returns 200", status == 200, f"status={status}")
         schemas[disease] = json.loads(body)
 
-    for disease in ("cvd", "diabetes", "alzheimers"):
+    for disease in ("cvd", "diabetes", "alzheimers", "liver"):
         payload = build_payload(schemas[disease])
         status, body, _ = request(
             "POST", f"{BACKEND_URL}/predict/{disease}", payload, token
@@ -99,8 +99,8 @@ def main():
     status, body, _ = request("GET", f"{BACKEND_URL}/history", token=token)
     records = json.loads(body) if body else []
     check(
-        "history has exactly 3 records",
-        status == 200 and len(records) == 3,
+        "history has exactly 4 records",
+        status == 200 and len(records) == 4,
         f"status={status} count={len(records)}",
     )
     leaks = [key for record in records for key in record if "feature" in key.lower()]
