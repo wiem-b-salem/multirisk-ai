@@ -17,6 +17,10 @@ export default function Home() {
           <h2>Alzheimer's disease</h2>
           <p>Estimate Alzheimer's disease risk.</p>
         </Link>
+        <Link className="card" to="/predict/liver">
+          <h2>Liver disease</h2>
+          <p>Estimate liver disease risk.</p>
+        </Link>
       </div>
     </div>
   )

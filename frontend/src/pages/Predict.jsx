@@ -8,20 +8,29 @@ const DISEASE_NAMES = {
   cvd: 'Cardiovascular',
   diabetes: 'Type 2 Diabetes',
   alzheimers: "Alzheimer's disease",
+  liver: 'Liver disease',
 }
 const FAMILY_HISTORY = {
   cvd: 'famhist',
   diabetes: 'FamilyHistoryDiabetes',
   alzheimers: 'FamilyHistoryAlzheimers',
+  liver: 'GeneticRisk',
 }
+const DEFAULT_BOX_TITLE = 'Family history (required)'
 
 function normalizeSchema(disease, data) {
   if (Array.isArray(data)) {
-    return { fields: data, familyHistoryField: FAMILY_HISTORY[disease], populationNote: '' }
+    return {
+      fields: data,
+      familyHistoryField: FAMILY_HISTORY[disease],
+      boxTitle: DEFAULT_BOX_TITLE,
+      populationNote: '',
+    }
   }
   return {
     fields: data.raw_fields,
     familyHistoryField: data.family_history_field,
+    boxTitle: data.family_history_box_title || DEFAULT_BOX_TITLE,
     populationNote: data.population_note || '',
   }
 }
@@ -432,7 +441,7 @@ export default function Predict() {
       <form data-testid="predict-form" onSubmit={handleSubmit}>
         {familyField && (
           <div className="family-box" data-testid="family-history-box">
-            <h3>Family history (required)</h3>
+            <h3>{schema.boxTitle}</h3>
             {renderField(familyField)}
           </div>
         )}
