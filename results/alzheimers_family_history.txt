@@ -1,0 +1,9 @@
+=== Alzheimer's (FamilyHistoryAlzheimers) ===
+Positive rate family history absent:  0.363
+Positive rate family history present: 0.327
+Odds ratio: 0.852
+Chi-square p-value: 0.140698
+=== Logistic regression coefficients (standardized) ===
+full: -0.0657
+risk_only: -0.0649
+compact: -0.0634
