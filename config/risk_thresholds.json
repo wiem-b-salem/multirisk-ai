@@ -7,5 +7,9 @@
     "low_max": 0.44,
     "high_min": 0.44
   },
-  "note": "Chosen from out-of-fold predictions on the training set. cvd: recall>=0.90 below low_max, specificity>=0.90 above high_min. diabetes: single threshold maximizing Youden's J (two risk levels)."
+  "note": "Chosen from out-of-fold predictions on the training set. cvd: recall>=0.90 below low_max, specificity>=0.90 above high_min. diabetes: single threshold maximizing Youden's J (two risk levels).",
+  "alzheimers": {
+    "low_max": 0.2985038875290284,
+    "high_min": 0.6448177527418835
+  }
 }
