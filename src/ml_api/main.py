@@ -15,6 +15,7 @@ CONFIG_DIR = ROOT / "config"
 DISEASES = {
     "cvd": ("cvd", "cardiovascular"),
     "diabetes": ("diabetes_compact", "diabetes"),
+    "alzheimers": ("alzheimers_compact", "alzheimers"),
 }
 DISCLAIMER = (
     "This is an estimate for academic demonstration, not a medical diagnosis. "
@@ -23,6 +24,10 @@ DISCLAIMER = (
 MODEL_NOTE = (
     "This model was trained on a synthetic dataset and relies mainly on "
     "HbA1c and fasting blood sugar."
+)
+ALZHEIMERS_MODEL_NOTE = (
+    "This model was trained on a synthetic dataset and relies mainly on MMSE "
+    "and MemoryComplaints; results do not reflect real patients."
 )
 SCORE_NOTE = (
     "Model score, not a calibrated probability: models were trained with "
@@ -175,6 +180,8 @@ def predict(disease: str, body: dict = Body(...)):
         result["factors_note"] = FACTORS_NOTE
     if disease == "diabetes":
         result["model_note"] = MODEL_NOTE
+    if disease == "alzheimers":
+        result["model_note"] = ALZHEIMERS_MODEL_NOTE
     out = out_of_training_range(state["schema"], features)
     if out:
         result["out_of_training_range"] = out

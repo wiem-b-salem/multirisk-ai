@@ -4,8 +4,16 @@ import { API_URL, clearToken, getToken } from '../api'
 import { GRAMS_PER_CIGARETTE, bmiFromWeightHeight, cumulativeTobaccoKg } from '../derived'
 import { labelFor } from '../labels'
 
-const DISEASE_NAMES = { cvd: 'Cardiovascular', diabetes: 'Type 2 Diabetes' }
-const FAMILY_HISTORY = { cvd: 'famhist', diabetes: 'FamilyHistoryDiabetes' }
+const DISEASE_NAMES = {
+  cvd: 'Cardiovascular',
+  diabetes: 'Type 2 Diabetes',
+  alzheimers: "Alzheimer's disease",
+}
+const FAMILY_HISTORY = {
+  cvd: 'famhist',
+  diabetes: 'FamilyHistoryDiabetes',
+  alzheimers: 'FamilyHistoryAlzheimers',
+}
 
 function normalizeSchema(disease, data) {
   if (Array.isArray(data)) {

@@ -107,5 +107,67 @@
       "unit": "",
       "help": ""
     }
+  },
+  "alzheimers": {
+    "Age": {
+      "label": "Age",
+      "unit": "years",
+      "help": "Age in years."
+    },
+    "Gender": {
+      "label": "Gender code",
+      "unit": "",
+      "help": "The dataset codes gender as 0 or 1; coding to be verified on the source page"
+    },
+    "EducationLevel": {
+      "label": "Education level",
+      "unit": "",
+      "help": "0 to 3 as coded in the dataset; meaning to be verified on the source page"
+    },
+    "BMI": {
+      "label": "Body mass index (BMI)",
+      "unit": "kg/m2",
+      "help": "Weight in kg divided by height in metres squared."
+    },
+    "FamilyHistoryAlzheimers": {
+      "label": "Family history of Alzheimer's disease",
+      "unit": "",
+      "help": "Whether a close relative has or had Alzheimer's disease"
+    },
+    "CardiovascularDisease": {
+      "label": "Cardiovascular disease",
+      "unit": "",
+      "help": "Whether the person has been diagnosed with cardiovascular disease."
+    },
+    "Diabetes": {
+      "label": "Diabetes",
+      "unit": "",
+      "help": "Whether the person has been diagnosed with diabetes."
+    },
+    "Depression": {
+      "label": "Depression",
+      "unit": "",
+      "help": "Whether the person has been diagnosed with depression."
+    },
+    "HeadInjury": {
+      "label": "Head injury",
+      "unit": "",
+      "help": "Whether the person has had a head injury"
+    },
+    "Hypertension": {
+      "label": "Hypertension",
+      "unit": "",
+      "help": "Whether the person has been diagnosed with hypertension."
+    },
+    "MMSE": {
+      "label": "MMSE score",
+      "unit": "points",
+      "help": "Mini-Mental State Examination score, 0 to 30, higher is better; usually administered by a clinician"
+    },
+    "MemoryComplaints": {
+      "label": "Memory complaints",
+      "unit": "",
+      "help": "Whether the person or their family reports memory problems"
+    }
   }
 }
