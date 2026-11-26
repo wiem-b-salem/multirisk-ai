@@ -7,9 +7,9 @@ All endpoint fields, ports, and storage details below are read from the code
 
 ## 1. Overview
 
-MultiRisk AI estimates the **current** risk of two diseases from cross-sectional
-data: Type 2 Diabetes and Cardiovascular Disease (CVD). It is a small
-service-oriented application:
+MultiRisk AI estimates the **current** risk of four diseases from cross-sectional
+data: Type 2 Diabetes, Cardiovascular Disease (CVD), Alzheimer's disease, and
+liver disease. It is a small service-oriented application:
 
 - A **browser** loads a React single-page app served by nginx.
 - The **frontend** (nginx) serves static files and calls the **backend** over REST/JSON.
@@ -110,11 +110,11 @@ Offline scripts produce the files that the ML API loads at startup.
 
 ```mermaid
 flowchart LR
-    A["Raw CSV: CHDdata.csv, diabetes_data.csv"] --> B["Preprocessing: split, scale, encode"]
+    A["Raw CSVs: CHDdata.csv, diabetes_data.csv, alzheimers_disease_data.csv, Liver_disease_data.csv"] --> B["Preprocessing: split, scale, encode"]
     B --> C["Models: logreg, rf, mlp"]
     C --> D["Evaluation: CV + test metrics"]
-    C --> E["export_artifacts.py: schemas + help text"]
-    C --> F["calibrate_thresholds.py: thresholds"]
+    C --> E["Export scripts: schemas + help text"]
+    C --> F["Calibration scripts: thresholds"]
     E --> G["models/ schema JSON"]
     F --> H["config/risk_thresholds.json"]
     C --> I["models/ joblib and keras files"]
@@ -171,19 +171,21 @@ or cloud deployment files.
 | Method | Path | Auth | Request | Response |
 |--------|------|------|---------|----------|
 | GET | `/health` | none | – | `{status, diseases}` |
-| GET | `/schema/{disease}` | none | path param `disease` in `{cvd, diabetes}` | schema object (see below); `404` unknown disease |
+| GET | `/schema/{disease}` | none | path param `disease` in `{cvd, diabetes, alzheimers, liver}` | schema object (see below); `404` unknown disease |
 | POST | `/predict/{disease}` | none | `{features: {field: value}}` | prediction object (see below); `422` invalid features; `404` unknown disease |
 
 Schema object fields: `raw_fields[]`, `family_history_field`, `population_note`,
-`feature_columns[]`, `model_file`, `scaler_file`, `model_name`. Each entry of
-`raw_fields` has `name`, `label`, `unit`, `help`, `type`, `train_min`, `train_max`,
-`valid_min`, `valid_max`, and `allowed_values` for categorical fields.
+`feature_columns[]`, `model_file`, `scaler_file`, `model_name`; liver also has
+`family_history_box_title`. Each entry of `raw_fields` has `name`, `label`,
+`unit`, `help`, `type`, `train_min`, `train_max`, `valid_min`, `valid_max`, and
+`allowed_values` for categorical fields.
 
 Prediction object fields: `disease`, `model_name`, `risk_score`, `risk_level`,
 `score_note`, `top_factors`, `disclaimer`; plus `factors_note` (logistic
-regression only), `model_note` (diabetes only), `out_of_training_range` and
-`range_warning` (only when a value falls outside the training range), and
-`population_note` (always).
+regression only), `model_note` (diabetes, Alzheimer's disease, and liver disease),
+`out_of_training_range` and `range_warning` (only when a value falls outside the
+training range), and `population_note` (always). Random-forest models return
+`top_factors: null`.
 
 ### Backend (`src/backend/main.py`, port 8001)
 
@@ -228,19 +230,21 @@ regression only), `model_note` (diabetes only), `out_of_training_range` and
 ```
 multirisk-ai/
 ├── config/                     # field_help.json, risk_thresholds.json
-├── data/                       # cardiovascular/CHDdata.csv, diabetes/diabetes_data.csv
+├── data/                       # CHDdata.csv, diabetes_data.csv, alzheimers_disease_data.csv, Liver_disease_data.csv
 ├── docker/                     # ml.Dockerfile, backend.Dockerfile, frontend.Dockerfile, nginx.conf
-├── docs/                       # ARCHITECTURE.md, METHODOLOGY_RESULTS.md, PHASE1_..., PHASE2_...
+├── docs/                       # ARCHITECTURE.md, METHODOLOGY_RESULTS.md, disease result notes
 ├── frontend/                   # React + Vite app (src/pages, src/components, src/api.js)
-├── models/                     # cardiovascular/ and diabetes/ model, scaler, schema files
+├── models/                     # cardiovascular/, diabetes/, alzheimers/, liver/ artifacts
 ├── notebooks/                  # analysis notebooks
-├── results/                    # baselines.csv, mlp.csv, summary.csv, diabetes_compact.csv, figures/
+├── results/                    # four-disease metric CSVs/TXTs and figures/
 ├── scripts/                    # smoke_test.py
 ├── src/
 │   ├── backend/main.py         # auth + history service
 │   ├── ml_api/main.py          # prediction service
 │   ├── cardiovascular/preprocess.py
 │   ├── diabetes/preprocess.py
+│   ├── alzheimers/             # preprocessing, baselines, MLP, report, export
+│   ├── liver/                  # preprocessing, baselines, MLP, report, export
 │   ├── baselines.py            # logreg + rf baselines
 │   ├── mlp.py                  # neural network baseline
 │   ├── diabetes_compact.py     # compact diabetes model

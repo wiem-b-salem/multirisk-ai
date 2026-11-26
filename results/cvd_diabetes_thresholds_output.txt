@@ -1,0 +1,38 @@
+
+cvd out-of-fold (low_max=0.2770, high_min=0.7111)
+  band  rows    share  positive_rate
+   low   105 0.284553       0.114286
+medium   188 0.509485       0.340426
+  high    76 0.205962       0.684211
+NOTE: diabetes low_max >= high_min; using Youden's J threshold 0.4400 (two levels: low/high).
+
+diabetes out-of-fold (low_max=0.4400, high_min=0.4400)
+band  rows    share  positive_rate
+ low   921 0.612774       0.071661
+high   582 0.387226       0.920962
+
+Wrote C:\Users\bswie\Desktop\ing5\multirisk-ai\config\risk_thresholds.json
+{
+  "cvd": {
+    "low_max": 0.27703360102750624,
+    "high_min": 0.711124446390867
+  },
+  "diabetes": {
+    "low_max": 0.44,
+    "high_min": 0.44
+  },
+  "note": "Chosen from out-of-fold predictions on the training set. cvd: recall>=0.90 below low_max, specificity>=0.90 above high_min. diabetes: single threshold maximizing Youden's J (two risk levels)."
+}
+
+Final test-set check (frozen thresholds):
+
+cvd test (low_max=0.2770, high_min=0.7111)
+  band  rows    share  positive_rate
+   low    25 0.268817       0.040000
+medium    38 0.408602       0.315789
+  high    30 0.322581       0.633333
+
+diabetes test (low_max=0.4400, high_min=0.4400)
+band  rows    share  positive_rate
+ low   226 0.601064       0.053097
+high   150 0.398936       0.920000
