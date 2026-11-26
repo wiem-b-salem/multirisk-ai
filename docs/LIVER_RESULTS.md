@@ -13,6 +13,8 @@
 
 `GeneticRisk` stays numeric (0/1/2); no other encoding is needed.
 
+Internally, the API and frontend reuse the key family_history_field for the mandatory first input; for liver it holds GeneticRisk, which is a genetic-risk level and not a family-history question.
+
 ## Protocol
 
 Every set uses a stratified 80/20 split with `random_state=42` (1,360 training rows, 340 test rows) and a `StandardScaler` fitted on the training rows only. Logistic regression (`max_iter=1000`, `class_weight="balanced"`, `random_state=42`) and random forest (`n_estimators=300`, `class_weight="balanced"`, `random_state=42`) use the same five-fold stratified CV on the training set (shuffle, seed 42), with `cv_roc_auc_mean` as the only selection criterion. The MLP uses the same architecture and settings as the Alzheimer's model (64 and 32 hidden units, dropout 0.3 and 0.2, Adam at 0.001, binary crossentropy, balanced class weights, 200 epochs, batch size 32, early stopping with patience 15); its seed mean and standard deviation use seeds 0-4, and the seed-42 model is saved. The test set was used once for reporting, never for model, feature or threshold choices.
@@ -62,9 +64,14 @@ Training out-of-fold bands:
 | medium | 58 | 0.042647 | 0.568966 |
 | high | 701 | 0.515441 | 0.915835 |
 
+## Reproducing the results
+
+The CSV is not in the repository (git ignores `data/**/*.csv`), so download it from the Kaggle source page and place it at `data/liver/Liver_disease_data.csv`. Then run `python -m src.liver.eda`, `python -m src.liver.baselines`, `python -m src.liver.mlp`, `python -m src.liver.genetic_risk_check`, `python -m src.liver.report`, `python -m src.liver.calibrate_thresholds` and `python -m src.liver.export_artifacts`, in that order. The saved outputs are in `results/`, including `results/liver_thresholds_output.txt` and `results/liver_importance_output.txt`. report.py needs models/liver/mlp_liver_full.keras, which git does not track, so run the mlp script before it; the importance numbers can be reproduced without it with python -m src.liver.importance_check.
+
 ## Limitations
 
-- The dataset is synthetic and not validated on real patients; there is no external validation.
+- The dataset appears synthetic (evenly spread values, 55% disease prevalence); to be verified on the source page. It is not validated on real patients and there is no external validation.
 - The source does not document the coding or units of `Gender`, `AlcoholConsumption`, `GeneticRisk`, `PhysicalActivity` or `LiverFunctionTest`; the meaning of `GeneticRisk` in particular needs verification.
 - `GeneticRisk` is a Genetic risk level, not a family-history question.
 - This is an academic estimate, not a diagnostic tool or a calibrated individual probability.
+- The served model is a random forest, so the API returns no list of top factors for liver (the app shows the risk level, the score and the notes).

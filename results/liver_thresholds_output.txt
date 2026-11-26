@@ -1,0 +1,20 @@
+
+liver out-of-fold (low_max=0.4733, high_min=0.5400)
+  band  rows    share  positive_rate
+   low   601 0.441912       0.123128
+medium    58 0.042647       0.568966
+  high   701 0.515441       0.915835
+
+Config check:
+cvd unchanged: True
+diabetes unchanged: True
+note unchanged: True
+alzheimers unchanged: True
+liver unchanged: True
+Wrote C:\Users\bswie\Desktop\ing5\multirisk-ai\config\risk_thresholds.json
+
+Final test-set check (frozen thresholds):
+  band  rows    share  positive_rate
+   low   163 0.479412       0.128834
+medium    15 0.044118       0.733333
+  high   162 0.476471       0.956790
