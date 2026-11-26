@@ -101,7 +101,7 @@ describe('Liver disease pages', () => {
     expect(card.getAttribute('href')).toBe('/predict/liver')
   })
 
-  it('renders the liver form with genetic risk level codes and BMI inputs', async () => {
+  it('renders the liver form with genetic risk choices and BMI inputs', async () => {
     vi.stubGlobal('fetch', vi.fn(() => jsonResponse(liverSchema)))
     renderPredict('liver')
 
@@ -110,9 +110,11 @@ describe('Liver disease pages', () => {
     expect(screen.queryByText('Family history (required)')).toBeNull()
     const geneticRisk = screen.getByLabelText('Genetic risk level')
     expect([...geneticRisk.options].map((option) => option.value)).toEqual(['', '0', '1', '2'])
-    expect(screen.getAllByText(/Genetic risk category from 0 to 2/).length).toBeGreaterThan(0)
-    expect(screen.getByLabelText('Weight (kg)')).toBeTruthy()
-    expect(screen.getByLabelText('Height (cm)')).toBeTruthy()
+    expect(
+      screen.getByText('Usually determined by a clinician or a genetic test.'),
+    ).toBeTruthy()
+    expect(screen.getByLabelText('Weight')).toBeTruthy()
+    expect(screen.getByLabelText('Height')).toBeTruthy()
   })
 
   it('keeps the default box title for other diseases', async () => {

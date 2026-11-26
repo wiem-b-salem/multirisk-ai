@@ -75,10 +75,10 @@ function renderPredict() {
 }
 
 function fillNonFamilyFields(status = 'never') {
-  fireEvent.change(screen.getByLabelText('Age'), { target: { value: '40' } })
-  fireEvent.change(screen.getByLabelText('Weight (kg)'), { target: { value: '70' } })
-  fireEvent.change(screen.getByLabelText('Height (cm)'), { target: { value: '175' } })
-  fireEvent.change(screen.getByLabelText('Cumulative tobacco use'), {
+  fireEvent.change(screen.getByLabelText('How old are you?'), { target: { value: '40' } })
+  fireEvent.change(screen.getByLabelText('Weight'), { target: { value: '70' } })
+  fireEvent.change(screen.getByLabelText('Height'), { target: { value: '175' } })
+  fireEvent.change(screen.getByLabelText('Do you smoke?'), {
     target: { value: status },
   })
 }
@@ -100,9 +100,9 @@ describe('Predict form', () => {
     const form = await screen.findByTestId('predict-form')
     expect(screen.getByTestId('family-history-box')).toBeTruthy()
     expect(form.querySelector('input, select').getAttribute('name')).toBe('famhist')
-    expect(screen.getByLabelText('Weight (kg)')).toBeTruthy()
-    expect(screen.getByLabelText('Height (cm)')).toBeTruthy()
-    expect(screen.getByLabelText('Cumulative tobacco use')).toBeTruthy()
+    expect(screen.getByLabelText('Weight')).toBeTruthy()
+    expect(screen.getByLabelText('Height')).toBeTruthy()
+    expect(screen.getByLabelText('Do you smoke?')).toBeTruthy()
   })
 
   it('shows the computed BMI from weight and height', async () => {
@@ -110,10 +110,10 @@ describe('Predict form', () => {
     renderPredict()
 
     await screen.findByTestId('predict-form')
-    fireEvent.change(screen.getByLabelText('Weight (kg)'), { target: { value: '70' } })
-    fireEvent.change(screen.getByLabelText('Height (cm)'), { target: { value: '175' } })
+    fireEvent.change(screen.getByLabelText('Weight'), { target: { value: '70' } })
+    fireEvent.change(screen.getByLabelText('Height'), { target: { value: '175' } })
 
-    expect(await screen.findByText(/BMI used by the model: 22\.9/)).toBeTruthy()
+    expect(await screen.findByText(/Your BMI: 22\.9/)).toBeTruthy()
   })
 
   it('hides the cigarette inputs for never smokers', async () => {
@@ -121,13 +121,13 @@ describe('Predict form', () => {
     renderPredict()
 
     await screen.findByTestId('predict-form')
-    fireEvent.change(screen.getByLabelText('Cumulative tobacco use'), {
+    fireEvent.change(screen.getByLabelText('Do you smoke?'), {
       target: { value: 'current' },
     })
-    expect(screen.getByLabelText('Cigarettes per day')).toBeTruthy()
-    expect(screen.getByLabelText('Years smoked')).toBeTruthy()
+    expect(screen.getByLabelText('How many cigarettes per day?')).toBeTruthy()
+    expect(screen.getByLabelText('For how many years?')).toBeTruthy()
 
-    fireEvent.change(screen.getByLabelText('Cumulative tobacco use'), {
+    fireEvent.change(screen.getByLabelText('Do you smoke?'), {
       target: { value: 'never' },
     })
     expect(screen.queryByLabelText('Cigarettes per day')).toBeNull()
@@ -140,11 +140,11 @@ describe('Predict form', () => {
     renderPredict()
 
     await screen.findByTestId('predict-form')
-    fireEvent.change(screen.getByLabelText('Age'), { target: { value: '40' } })
-    fireEvent.change(screen.getByLabelText('Family history of heart disease'), {
+    fireEvent.change(screen.getByLabelText('How old are you?'), { target: { value: '40' } })
+    fireEvent.change(screen.getByLabelText('Has a close family member had heart disease?'), {
       target: { value: 'Present' },
     })
-    fireEvent.change(screen.getByLabelText('Cumulative tobacco use'), {
+    fireEvent.change(screen.getByLabelText('Do you smoke?'), {
       target: { value: 'never' },
     })
     fireEvent.click(screen.getByRole('button', { name: 'Predict' }))
@@ -157,7 +157,17 @@ describe('Predict form', () => {
   })
 
   it('sends computed obesity and tobacco and omits the helper keys', async () => {
-    const result = { disease: 'cvd', risk_score: 0.95, risk_level: 'high' }
+    const result = {
+      disease: 'cvd',
+      ml: { model_name: 'logreg', risk_score: 0.95, risk_level: 'high' },
+      dl: { model_name: 'mlp', risk_score: 0.8, risk_level: 'medium' },
+      comparison: {
+        score_difference: -0.15,
+        risk_levels_match: false,
+        interpretation: 'ML classifies this input as high risk, while the neural network classifies it as medium risk.',
+      },
+      disclaimer: 'Academic estimate only.',
+    }
     const fetchMock = vi.fn((url, options = {}) =>
       options.method === 'POST' ? jsonResponse(result) : jsonResponse(schema),
     )
@@ -166,19 +176,21 @@ describe('Predict form', () => {
 
     await screen.findByTestId('predict-form')
     fillNonFamilyFields('current')
-    fireEvent.change(screen.getByLabelText('Family history of heart disease'), {
+    fireEvent.change(screen.getByLabelText('Has a close family member had heart disease?'), {
       target: { value: 'Present' },
     })
-    fireEvent.change(screen.getByLabelText('Cigarettes per day'), {
+    fireEvent.change(screen.getByLabelText('How many cigarettes per day?'), {
       target: { value: '20' },
     })
-    fireEvent.change(screen.getByLabelText('Years smoked'), { target: { value: '10' } })
+    fireEvent.change(screen.getByLabelText('For how many years?'), { target: { value: '10' } })
     fireEvent.click(screen.getByRole('button', { name: 'Predict' }))
 
-    await screen.findByText('high')
+    await screen.findAllByTestId('result-card')
+    expect(screen.getByTestId('comparison-summary')).toBeTruthy()
     const post = fetchMock.mock.calls.find(
       ([, options]) => options && options.method === 'POST',
     )
+    expect(String(post[0])).toContain('/compare/cvd')
     const body = JSON.parse(post[1].body)
     expect(body.features.obesity).toBe(22.9)
     expect(body.features.tobacco).toBe(73)
@@ -192,13 +204,29 @@ describe('Predict form', () => {
   it('shows the risk badge and disclaimer and hides factors when top_factors is null', async () => {
     const result = {
       disease: 'cvd',
-      model_name: 'rf',
-      risk_score: 0.95,
-      risk_level: 'high',
-      score_note: 'Model score note.',
-      top_factors: null,
+      ml: {
+        model_name: 'rf',
+        risk_score: 0.95,
+        risk_level: 'high',
+        score_note: 'Model score note.',
+        top_factors: null,
+        disclaimer: 'Academic estimate only.',
+        model_note: 'Model note.',
+      },
+      dl: {
+        model_name: 'mlp',
+        risk_score: 0.9,
+        risk_level: 'high',
+        score_note: 'DL score note.',
+        top_factors: null,
+        disclaimer: 'Academic estimate only.',
+      },
+      comparison: {
+        score_difference: -0.05,
+        risk_levels_match: true,
+        interpretation: 'Both models classify this input as high risk.',
+      },
       disclaimer: 'Academic estimate only.',
-      model_note: 'Model note.',
     }
     vi.stubGlobal(
       'fetch',
@@ -210,26 +238,26 @@ describe('Predict form', () => {
 
     await screen.findByTestId('predict-form')
     fillNonFamilyFields('never')
-    fireEvent.change(screen.getByLabelText('Family history of heart disease'), {
+    fireEvent.change(screen.getByLabelText('Has a close family member had heart disease?'), {
       target: { value: 'Present' },
     })
     fireEvent.click(screen.getByRole('button', { name: 'Predict' }))
 
-    expect(await screen.findByText('high')).toBeTruthy()
-    expect(screen.getByText('Academic estimate only.')).toBeTruthy()
+    expect(await screen.findAllByText('high')).toHaveLength(2)
+    expect(screen.getAllByText('Academic estimate only.')).toHaveLength(3)
     expect(screen.queryByText('Top factors')).toBeNull()
   })
 
-  it('shows an amber notice when a value is outside the training range', async () => {
+  it('shows an amber notice when a value is outside the model range', async () => {
     vi.stubGlobal('fetch', vi.fn(() => jsonResponse(schema)))
     renderPredict()
 
     await screen.findByTestId('predict-form')
-    fireEvent.change(screen.getByLabelText('Age'), { target: { value: '80' } })
+    fireEvent.change(screen.getByLabelText('How old are you?'), { target: { value: '80' } })
 
     expect(
       await screen.findByText(
-        'Outside the training range: the estimate may be unreliable.',
+        'This value is outside the range the model was built for, so the result may be less reliable.',
       ),
     ).toBeTruthy()
   })

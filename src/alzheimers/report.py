@@ -133,7 +133,9 @@ def main():
     plot_roc(probas, y_test)
     plot_calibration(probas, y_test)
 
-    subset = summary[summary["setup"] == SETUP]
+    subset = summary[
+        (summary["setup"] == SETUP) & (summary["model"].isin(MODELS))
+    ]
     best_index = subset["cv_roc_auc_mean"].idxmax()
     final_name = subset.loc[best_index, "model"]
     final_cv = subset.loc[best_index, "cv_roc_auc_mean"]

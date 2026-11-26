@@ -118,6 +118,27 @@ def test_diabetes_fasting_blood_sugar_out_of_valid_range():
     assert response.status_code == 422
 
 
+def test_compare_returns_ml_and_dl_results():
+    for disease in ("cvd", "diabetes"):
+        response = client.post(f"/compare/{disease}", json=make_payload(disease))
+        assert response.status_code == 200
+        data = response.json()
+        assert data["ml"]["model_name"] in {"logreg", "rf"}
+        assert data["dl"]["model_name"] == "mlp"
+        assert data["dl"]["model_label"] == "Neural Network (MLP)"
+        assert 0 <= data["ml"]["risk_score"] <= 1
+        assert 0 <= data["dl"]["risk_score"] <= 1
+        assert data["ml"]["risk_level"] in {"low", "medium", "high"}
+        assert data["dl"]["risk_level"] in {"low", "medium", "high"}
+        assert data["comparison"]["risk_levels_match"] in {True, False}
+        print(json.dumps(data, indent=2))
+
+
+def test_compare_unknown_disease():
+    response = client.post("/compare/unknown", json=make_payload("cvd"))
+    assert response.status_code == 404
+
+
 def test_unknown_disease():
     response = client.post("/predict/unknown", json=make_payload("cvd"))
     assert response.status_code == 404

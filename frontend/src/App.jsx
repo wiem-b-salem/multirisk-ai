@@ -1,6 +1,7 @@
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { getToken } from './api'
 import NavBar from './components/NavBar'
+import Assessment from './pages/Assessment'
 import History from './pages/History'
 import Home from './pages/Home'
 import Login from './pages/Login'
@@ -37,6 +38,14 @@ export default function App() {
           element={
             <Protected>
               <Predict />
+            </Protected>
+          }
+        />
+        <Route
+          path="/assessment"
+          element={
+            <Protected>
+              <Assessment />
             </Protected>
           }
         />

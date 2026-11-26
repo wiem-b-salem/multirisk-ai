@@ -521,3 +521,22 @@ files may need to be downloaded from their source pages and placed under
   importance numbers can be reproduced without that file by running
   `src.liver.importance_check`.
 - Each export script rewrites its own schema JSON files under `models/`.
+
+## 13. Deployed ML versus DL comparison
+
+The deployed comparison is produced by `src/deep_serving.py`, not by the research
+MLP scripts. It trains one MLP per served feature set, evaluates it on the same
+held-out test split as the preserved ML model, and derives separate DL thresholds
+from five-fold out-of-fold predictions on the training split only.
+
+| Disease | ML model | ML ROC-AUC | ML accuracy | DL ROC-AUC | DL accuracy | DL training time |
+|---------|----------|------------|-------------|------------|-------------|------------------|
+| CVD | Logistic Regression | 0.8207 | 0.6774 | 0.7956 | 0.6774 | 5.48 s |
+| Diabetes | Random Forest | 0.9547 | 0.9282 | 0.9456 | 0.9016 | 10.74 s |
+| Alzheimer's | Logistic Regression | 0.6922 | 0.6163 | 0.7240 | 0.6698 | 7.51 s |
+| Liver | Random Forest | 0.9599 | 0.9059 | 0.9152 | 0.8294 | 11.29 s |
+
+Full numbers are in `results/comparison_metrics.csv`. The API reads
+`config/comparison_metrics.json` and `config/dl_risk_thresholds.json`. The served
+MLP files are explicitly unignored in `.gitignore`, while research MLP variants
+remain untracked. See `docs/COMPARISON_REPORT.md` for the full final report.

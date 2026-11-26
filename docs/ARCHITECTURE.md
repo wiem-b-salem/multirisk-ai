@@ -20,8 +20,8 @@ application:
 - The **frontend** (nginx) serves static files and calls the **backend** over REST/JSON.
 - The **backend** (FastAPI) handles authentication and prediction history, and
   proxies prediction and schema requests to the **ML API**.
-- The **ML API** (FastAPI) loads trained models, schemas, and thresholds from disk
-  and returns risk scores and levels.
+- The **ML API** (FastAPI) loads trained ML and MLP models, schemas, metrics, and
+  separate ML/DL thresholds from disk and returns risk scores and levels.
 - The **history database** stores users and prediction records. It is SQLite in
   development (the backend default `DATABASE_URL` is `sqlite:///./backend.db`) and
   PostgreSQL in Docker (`postgresql+psycopg://...`).
@@ -87,12 +87,13 @@ sequenceDiagram
 
 ## 4. Data model
 
-Two tables, read from `src/backend/main.py`. The `disease` column in a
-`PredictionRecord` holds one of `cvd`, `diabetes`, `alzheimers`, and `liver`.
+Three tables, read from `src/backend/main.py`. The `disease` column in both
+record tables holds one of `cvd`, `diabetes`, `alzheimers`, and `liver`.
 
 ```mermaid
 erDiagram
     User ||--o{ PredictionRecord : has
+    User ||--o{ ComparisonRecord : has
     User {
         int id PK
         string email
@@ -105,6 +106,16 @@ erDiagram
         string disease
         string risk_level
         float risk_score
+        datetime created_at
+    }
+    ComparisonRecord {
+        int id PK
+        int user_id FK
+        string disease
+        string ml_risk_level
+        float ml_risk_score
+        string dl_risk_level
+        float dl_risk_score
         datetime created_at
     }
 ```
@@ -128,6 +139,18 @@ and `src/liver/` for `liver`.
 | `diabetes` | `models/diabetes/schema_diabetes_compact.json` | `models/diabetes/final_diabetes_compact.joblib` | `models/diabetes/scaler_diabetes_compact.joblib` | `rf` |
 | `alzheimers` | `models/alzheimers/schema_alzheimers_compact.json` | `models/alzheimers/final_alzheimers_compact.joblib` | `models/alzheimers/scaler_alzheimers_compact.joblib` | `logreg` |
 | `liver` | `models/liver/schema_liver_full.json` | `models/liver/final_liver_full.joblib` | `models/liver/scaler_liver_full.joblib` | `rf` |
+
+The same served feature columns and scalers are used by the deployed MLP models:
+
+| Disease | Served MLP |
+|---------|------------|
+| `cvd` | `models/cardiovascular/mlp_cvd.keras` |
+| `diabetes` | `models/diabetes/mlp_diabetes_compact.keras` |
+| `alzheimers` | `models/alzheimers/mlp_alzheimers_compact.keras` |
+| `liver` | `models/liver/mlp_liver_full.keras` |
+
+`src/deep_serving.py` trains those MLPs, writes
+`config/dl_risk_thresholds.json`, and writes `config/comparison_metrics.json`.
 
 ```mermaid
 flowchart LR
@@ -203,7 +226,8 @@ or cloud deployment files.
 |--------|------|------|---------|----------|
 | GET | `/health` | none | – | `200 {status: "ok", diseases: ["cvd", "diabetes", "alzheimers", "liver"]}` |
 | GET | `/schema/{disease}` | none | path param `disease` in `{cvd, diabetes, alzheimers, liver}` | `200` schema object (see below); `404` unknown disease |
-| POST | `/predict/{disease}` | none | `{features: {field: value}}` | `200` prediction object (see below); `422` invalid features; `404` unknown disease |
+| POST | `/predict/{disease}` | none | `{features: {field: value}}` | `200` ML-only prediction object (see below); `422` invalid features; `404` unknown disease |
+| POST | `/compare/{disease}` | none | `{features: {field: value}}` | `200` object with `ml`, `dl`, and `comparison`; `422` invalid features; `404` unknown disease |
 
 Schema object fields: `raw_fields[]`, `family_history_field`, `population_note`,
 `feature_columns[]`, `model_file`, `scaler_file`, `model_name`; liver also has
@@ -250,7 +274,8 @@ per-disease additions are:
 | GET | `/me` | Bearer | – | `200 {id, email, created_at}`; `401` unauthenticated |
 | GET | `/schema/{disease}` | none | path param `disease` | proxied schema; `404` passthrough; `503` unreachable |
 | POST | `/predict/{disease}` | Bearer | `{features: {...}}` | ML prediction object + `record_id`; `401` unauthenticated; `422`/`404` passthrough; `503` unreachable; `502` other ML error |
-| GET | `/history` | Bearer | – | `200` list of `{id, disease, risk_level, risk_score, created_at}`, newest first; `401` unauthenticated |
+| POST | `/compare/{disease}` | Bearer | `{features: {...}}` | comparison object + `record_id`; `401` unauthenticated; `422`/`404` passthrough; `503` unreachable; `502` other ML error |
+| GET | `/history` | Bearer | – | `200` merged list of old ML-only records and new comparison records, newest first; `401` unauthenticated |
 
 ## 8. Input validation and ranges
 
@@ -337,20 +362,25 @@ days per year use `365`, `GRAMS_PER_CIGARETTE = 1`, and division by `1000`, then
 rounding to one decimal. The helper displays the estimated lifetime tobacco in
 kg and uses the same amber training-range warning.
 
-The result card shows the risk-level badge, `round(risk_score * 100) / 100`
-as the model score, the score note, logistic-regression top factors with
-above/below-average labels, the factors and model notes when present, the
-training-range warning with affected field names, and the disclaimer.
+The result cards show the risk-level badge, `Risk category`, `round(risk_score *
+100) / 100` as the model score, the score note, logistic-regression top factors
+with above/below-average labels, the factors and model notes when present, the
+training-range warning with affected field names, and the disclaimer. `Predict`
+and `Assessment` call `/compare/{disease}`, render `ComparisonResult` with two
+cards labelled Machine Learning and Deep Learning, and add a comparison summary
+with ROC-AUC values and a neutral interpretation. `ResultCard` remains in use
+for validation and service-error states.
 
 ## 10. Testing and CI
 
 `scripts/smoke_test.py` drives the deployed stack and checks, in order:
 backend `/health` is `200`; registration is `201`; login is `200`; `GET
 /schema/{disease}` is `200` for `cvd`, `diabetes`, `alzheimers`, and `liver`;
-`POST /predict/{disease}` is `200` for each disease with a `risk_score` between
-`0` and `1` and a non-empty `risk_level`; an incomplete CVD payload missing its
-family-history field returns `422`; history has exactly four records; no history
-key contains `feature`; frontend `/` returns `text/html` with `200`; and the
+`POST /compare/{disease}` is `200` for each disease with ML and DL `risk_score`
+values between `0` and `1`, non-empty risk levels, and a `comparison` object;
+an incomplete CVD payload missing its family-history field returns `422`; history
+has exactly four comparison records; no history key contains `feature`; frontend
+`/` returns `text/html` with `200`; and the
 frontend `/history` SPA fallback returns `200`. Payloads are built from the last
 allowed value or the midpoint of each numeric field's training range.
 
@@ -366,16 +396,19 @@ Measured in this task:
 
 | Check | Result |
 |-------|--------|
-| `python -m pytest -q` with `data/` present | `49 passed, 1 warning in 8.91s` |
-| `python -m pytest -q` with `data/` temporarily renamed | `37 passed, 12 skipped, 1 warning in 7.53s`; `data/` restored, `data_bak/` absent |
-| `npm run test` | Vitest `v2.1.9`, `4` files and `18` tests passed |
-| `npm run build` | Vite transformed `43` modules and built successfully in `940ms` |
+| `python -m pytest -q` with `data/` present | `69 passed, 1 warning in 20.09s` |
+| `npm run test` | Vitest `v2.1.9`, `8` files and `36` tests passed |
+| `npm run build` | Vite transformed `49` modules and built successfully in `1.20s` |
+| `docker compose config --quiet` | passed with test environment variables |
+| `docker compose up --build -d --wait` + `scripts/smoke_test.py` | passed with test environment variables; frontend checked on `FRONTEND_PORT=18080` because port `8080` was occupied locally |
 
 ## 11. Security and privacy
+- **Stored data.** `User` rows store `id`, `email`, `password_hash`,
+  `created_at`. `PredictionRecord` rows store `id`, `user_id`, `disease`,
+  `risk_level`, `risk_score`, `created_at`. `ComparisonRecord` rows store `id`,
+  `user_id`, `disease`, ML and DL risk levels, ML and DL risk scores, and
+  `created_at`. **Input feature values are never stored.**
 
-- **Stored data.** `User` rows store `id`, `email`, `password_hash`, `created_at`.
-  `PredictionRecord` rows store `id`, `user_id`, `disease`, `risk_level`,
-  `risk_score`, `created_at`. **Input feature values are never stored.**
 - **Passwords.** Hashed with bcrypt (`bcrypt.hashpw` / `bcrypt.checkpw`); the
   plaintext password is never persisted.
 - **Tokens.** JWT signed with HS256, 60-minute expiry, `sub` = user id
@@ -401,7 +434,7 @@ Measured in this task:
 
 ```
 multirisk-ai/
-├── config/                     # field_help.json, risk_thresholds.json
+├── config/                     # field_help.json, risk_thresholds.json, dl_risk_thresholds.json, comparison_metrics.json
 ├── data/                       # CHDdata.csv, diabetes_data.csv, alzheimers_disease_data.csv, Liver_disease_data.csv
 ├── docker/                     # ml.Dockerfile, backend.Dockerfile, frontend.Dockerfile, nginx.conf
 ├── docs/                       # ARCHITECTURE.md, METHODOLOGY_RESULTS.md, disease result notes
@@ -419,7 +452,8 @@ multirisk-ai/
 │   ├── alzheimers/             # preprocessing, baselines, MLP, report, export
 │   ├── liver/                  # preprocessing, baselines, MLP, report, export
 │   ├── baselines.py            # logreg + rf baselines
-│   ├── mlp.py                  # neural network baseline
+│   ├── mlp.py                  # neural network research baseline
+│   ├── deep_serving.py         # served MLP training, DL thresholds, comparison metrics
 │   ├── diabetes_compact.py     # compact diabetes model
 │   ├── report.py               # summary, figures, final models
 │   ├── family_history_check.py

@@ -88,13 +88,16 @@ def main():
         print(f"\n{disease} out-of-fold (low_max={low_max:.4f}, high_min={high_min:.4f})")
         print(band_table(scores, y, low_max, high_min).to_string(index=False))
 
+    existing = json.loads(CONFIG_PATH.read_text()) if CONFIG_PATH.exists() else {}
     config = {
+        **existing,
         "cvd": thresholds["cvd"],
         "diabetes": thresholds["diabetes"],
         "note": (
             "Chosen from out-of-fold predictions on the training set. "
             "cvd: recall>=0.90 below low_max, specificity>=0.90 above high_min. "
-            "diabetes: single threshold maximizing Youden's J (two risk levels)."
+            "diabetes: single threshold maximizing Youden's J (two risk levels). "
+            "Thresholds for other diseases are preserved from the existing config."
         ),
     }
     CONFIG_PATH.parent.mkdir(parents=True, exist_ok=True)

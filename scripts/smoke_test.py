@@ -73,17 +73,23 @@ def main():
     for disease in ("cvd", "diabetes", "alzheimers", "liver"):
         payload = build_payload(schemas[disease])
         status, body, _ = request(
-            "POST", f"{BACKEND_URL}/predict/{disease}", payload, token
+            "POST", f"{BACKEND_URL}/compare/{disease}", payload, token
         )
         data = json.loads(body) if body else {}
+        ml = data.get("ml", {})
+        dl = data.get("dl", {})
         ok = (
             status == 200
-            and isinstance(data.get("risk_score"), (int, float))
-            and 0 <= data["risk_score"] <= 1
-            and bool(data.get("risk_level"))
+            and isinstance(ml.get("risk_score"), (int, float))
+            and isinstance(dl.get("risk_score"), (int, float))
+            and 0 <= ml["risk_score"] <= 1
+            and 0 <= dl["risk_score"] <= 1
+            and bool(ml.get("risk_level"))
+            and bool(dl.get("risk_level"))
+            and bool(data.get("comparison"))
         )
         check(
-            f"POST /predict/{disease} returns 200 with valid score",
+            f"POST /compare/{disease} returns 200 with ML and DL scores",
             ok,
             f"status={status} body={body[:200]}",
         )
@@ -92,7 +98,7 @@ def main():
     incomplete = build_payload(schemas["cvd"])
     incomplete["features"].pop(famhist, None)
     status, body, _ = request(
-        "POST", f"{BACKEND_URL}/predict/cvd", incomplete, token
+        "POST", f"{BACKEND_URL}/compare/cvd", incomplete, token
     )
     check("missing family-history field returns 422", status == 422, f"status={status}")
 
@@ -105,6 +111,29 @@ def main():
     )
     leaks = [key for record in records for key in record if "feature" in key.lower()]
     check("history stores no input features", not leaks, f"keys={leaks}")
+
+    profile_data = {"shared.age": 40, "cvd.famhist": "Present"}
+    status, _, _ = request("PUT", f"{BACKEND_URL}/profile", {"data": profile_data}, token)
+    check("PUT /profile returns 200", status == 200, f"status={status}")
+
+    status, body, _ = request("GET", f"{BACKEND_URL}/profile", token=token)
+    saved = json.loads(body) if body else {}
+    check(
+        "GET /profile returns saved data",
+        status == 200 and saved.get("data") == profile_data,
+        f"status={status}",
+    )
+
+    status, _, _ = request("DELETE", f"{BACKEND_URL}/profile", token=token)
+    check("DELETE /profile returns 204", status == 204, f"status={status}")
+
+    status, body, _ = request("GET", f"{BACKEND_URL}/profile", token=token)
+    cleared = json.loads(body) if body else {}
+    check(
+        "GET /profile after DELETE is empty",
+        status == 200 and cleared.get("data") == {},
+        f"status={status}",
+    )
 
     status, _, headers = request("GET", f"{FRONTEND_URL}/")
     check(

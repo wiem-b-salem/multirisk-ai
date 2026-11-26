@@ -22,7 +22,12 @@ data/**/*.csv
 models/**/*.pkl
 models/**/*.h5
 models/**/*.keras
+!models/cardiovascular/mlp_cvd.keras
+!models/diabetes/mlp_diabetes_compact.keras
+!models/alzheimers/mlp_alzheimers_compact.keras
+!models/liver/mlp_liver_full.keras
 models/**/*.pt
+
 
 .pytest_cache/
 

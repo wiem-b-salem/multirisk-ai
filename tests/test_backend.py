@@ -15,6 +15,7 @@ from sqlalchemy import select
 from src.backend import main as backend
 from src.backend.main import (
     Base,
+    ComparisonRecord,
     PredictionRecord,
     SessionLocal,
     app,
@@ -36,6 +37,29 @@ async def fake_call_ml_api(method, path, json_body=None):
     if path.startswith("/schema/"):
         return httpx.Response(200, json=[{"name": "age"}])
     disease = path.rsplit("/", 1)[-1]
+    if path.startswith("/compare/"):
+        return httpx.Response(
+            200,
+            json={
+                "disease": disease,
+                "ml": {
+                    "model_name": "rf",
+                    "risk_score": 0.8,
+                    "risk_level": "high",
+                },
+                "dl": {
+                    "model_name": "mlp",
+                    "risk_score": 0.4,
+                    "risk_level": "low",
+                },
+                "comparison": {
+                    "score_difference": -0.4,
+                    "risk_levels_match": False,
+                    "interpretation": "Models disagree.",
+                },
+                "disclaimer": "disclaimer",
+            },
+        )
     return httpx.Response(
         200,
         json={
@@ -144,6 +168,34 @@ def test_record_stores_no_features(monkeypatch):
         assert record is not None
         assert "features" not in record.__dict__
         assert all("123456" not in str(value) for value in record.__dict__.values())
+
+
+def test_compare_history_stores_both_results_without_features(monkeypatch):
+    monkeypatch.setattr(backend, "call_ml_api", fake_call_ml_api)
+    register()
+    token = login().json()["access_token"]
+    response = client.post(
+        "/compare/cvd", json={"features": {"age": 123456}}, headers=auth_headers(token)
+    )
+    assert response.status_code == 200
+    assert response.json()["record_id"] is not None
+
+    history = client.get("/history", headers=auth_headers(token)).json()
+    assert len(history) == 1
+    assert history[0]["record_type"] == "comparison"
+    assert history[0]["ml_risk_level"] == "high"
+    assert history[0]["dl_risk_level"] == "low"
+    assert "features" not in ComparisonRecord.__table__.columns.keys()
+    with SessionLocal() as db:
+        record = db.scalar(select(ComparisonRecord))
+        assert record is not None
+        assert "123456" not in str(record.__dict__)
+
+
+def test_compare_requires_auth(monkeypatch):
+    monkeypatch.setattr(backend, "call_ml_api", fake_call_ml_api)
+    response = client.post("/compare/cvd", json={"features": {"age": 50}})
+    assert response.status_code == 401
 
 
 def test_validate_settings_production_default_secret_raises():

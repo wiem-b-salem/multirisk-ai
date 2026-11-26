@@ -39,6 +39,8 @@ jobs:
     env:
       JWT_SECRET: ci-throwaway-jwt-secret-0123456789abcdef
       POSTGRES_PASSWORD: ci-throwaway-postgres-password
+      # Throwaway Fernet key for CI only; it protects nothing.
+      PROFILE_ENCRYPTION_KEY: 1i6eIXaz17KJUnOJ0hJx3jF2sZ3pEa71cH24O5v3xLE=
     steps:
       - uses: actions/checkout@v4
       - name: Start stack

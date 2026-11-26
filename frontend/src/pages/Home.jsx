@@ -21,6 +21,10 @@ export default function Home() {
           <h2>Liver disease</h2>
           <p>Estimate liver disease risk.</p>
         </Link>
+        <Link className="card" to="/assessment">
+          <h2>Full assessment (all diseases)</h2>
+          <p>Fill one form and assess all four models separately.</p>
+        </Link>
       </div>
     </div>
   )

@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { API_URL, clearToken, getToken } from '../api'
 
-const DISEASE_LABELS = { cvd: 'Cardiovascular', diabetes: 'Type 2 Diabetes' }
+const DISEASE_LABELS = {
+  cvd: 'Cardiovascular',
+  diabetes: 'Type 2 Diabetes',
+  alzheimers: "Alzheimer's disease",
+  liver: 'Liver disease',
+}
 
 export default function History() {
   const [records, setRecords] = useState([])
@@ -31,8 +36,8 @@ export default function History() {
           <tr>
             <th>Date</th>
             <th>Disease</th>
-            <th>Risk level</th>
-            <th>Model score</th>
+            <th>ML result</th>
+            <th>DL result</th>
           </tr>
         </thead>
         <tbody>
@@ -40,8 +45,15 @@ export default function History() {
             <tr key={record.id}>
               <td>{new Date(record.created_at).toLocaleString()}</td>
               <td>{DISEASE_LABELS[record.disease] || record.disease}</td>
-              <td>{record.risk_level}</td>
-              <td>{Math.round(record.risk_score * 100)} / 100</td>
+              <td>
+                {record.ml_risk_level || record.risk_level} [
+                {Math.round((record.ml_risk_score ?? record.risk_score) * 100)} / 100]
+              </td>
+              <td>
+                {record.dl_risk_level
+                  ? `${record.dl_risk_level} [${Math.round(record.dl_risk_score * 100)} / 100]`
+                  : '—'}
+              </td>
             </tr>
           ))}
         </tbody>

@@ -1,3 +1,8 @@
+import os
+
+os.environ.setdefault("TF_CPP_MIN_LOG_LEVEL", "2")
+os.environ.setdefault("TF_ENABLE_ONEDNN_OPTS", "0")
+
 import json
 from pathlib import Path
 from typing import Annotated, Literal
@@ -5,6 +10,7 @@ from typing import Annotated, Literal
 import joblib
 import numpy as np
 import pandas as pd
+import tensorflow as tf
 from fastapi import Body, FastAPI, HTTPException
 from pydantic import Field, ValidationError, create_model
 
@@ -17,6 +23,12 @@ DISEASES = {
     "diabetes": ("diabetes_compact", "diabetes"),
     "alzheimers": ("alzheimers_compact", "alzheimers"),
     "liver": ("liver_full", "liver"),
+}
+DL_MODEL_FILES = {
+    "cvd": "mlp_cvd.keras",
+    "diabetes": "mlp_diabetes_compact.keras",
+    "alzheimers": "mlp_alzheimers_compact.keras",
+    "liver": "mlp_liver_full.keras",
 }
 DISCLAIMER = (
     "This is an estimate for academic demonstration, not a medical diagnosis. "
@@ -37,6 +49,14 @@ LIVER_MODEL_NOTE = (
 SCORE_NOTE = (
     "Model score, not a calibrated probability: models were trained with "
     "balanced class weights."
+)
+DL_SCORE_NOTE = (
+    "Neural network score, not a calibrated probability: the MLP was trained "
+    "with balanced class weights and uses separate DL thresholds."
+)
+COMPARISON_NOTE = (
+    "Different model architectures can disagree; disagreement is not a medical "
+    "diagnosis and should be interpreted with caution."
 )
 FACTORS_NOTE = "Contributions are relative to the average person in the training data."
 RANGE_WARNING = (
@@ -82,6 +102,8 @@ def build_features_model(schema):
 
 def load_artifacts():
     thresholds = json.loads((CONFIG_DIR / "risk_thresholds.json").read_text())
+    dl_thresholds = json.loads((CONFIG_DIR / "dl_risk_thresholds.json").read_text())
+    metrics = json.loads((CONFIG_DIR / "comparison_metrics.json").read_text())
     artifacts = {}
     for disease, (setup, folder) in DISEASES.items():
         schema = json.loads((MODELS_DIR / folder / f"schema_{setup}.json").read_text())
@@ -91,13 +113,16 @@ def load_artifacts():
             "disease": disease,
             "schema": schema,
             "model": joblib.load(MODELS_DIR / folder / schema["model_file"]),
+            "dl_model": tf.keras.models.load_model(
+                MODELS_DIR / folder / DL_MODEL_FILES[disease], compile=False
+            ),
             "scaler": joblib.load(MODELS_DIR / folder / schema["scaler_file"]),
             "request_model": request_model,
         }
-    return artifacts, thresholds
+    return artifacts, thresholds, dl_thresholds, metrics
 
 
-ARTIFACTS, THRESHOLDS = load_artifacts()
+ARTIFACTS, THRESHOLDS, DL_THRESHOLDS, METRICS = load_artifacts()
 
 
 def preprocess(state, features):
@@ -113,8 +138,7 @@ def preprocess(state, features):
     return pd.DataFrame(scaled, columns=schema["feature_columns"])
 
 
-def risk_level(disease, score):
-    thresholds = THRESHOLDS[disease]
+def band_for(thresholds, score):
     if thresholds["low_max"] == thresholds["high_min"]:
         return "low" if score <= thresholds["low_max"] else "high"
     if score < thresholds["low_max"]:
@@ -122,6 +146,91 @@ def risk_level(disease, score):
     if score >= thresholds["high_min"]:
         return "high"
     return "medium"
+
+
+def risk_level(disease, score):
+    return band_for(THRESHOLDS[disease], score)
+
+
+def dl_risk_level(disease, score):
+    return band_for(DL_THRESHOLDS[disease], score)
+
+
+def disease_note(disease):
+    if disease == "diabetes":
+        return MODEL_NOTE
+    if disease == "alzheimers":
+        return ALZHEIMERS_MODEL_NOTE
+    if disease == "liver":
+        return LIVER_MODEL_NOTE
+    return None
+
+
+def score_artifacts(disease, kind):
+    source = METRICS[disease][kind]
+    return {
+        "test_roc_auc": source.get("test_roc_auc"),
+        "test_accuracy": source.get("test_accuracy"),
+        "training_seconds": source.get("training_seconds"),
+    }
+
+
+def ml_result(state, features, scaled):
+    disease = state["disease"]
+    model = state["model"]
+    score = float(model.predict_proba(scaled)[0, 1])
+    factors = (
+        factor_list(model, scaled)
+        if state["schema"]["model_name"] == "logreg"
+        else None
+    )
+    result = {
+        "disease": disease,
+        "model_name": state["schema"]["model_name"],
+        "risk_score": score,
+        "risk_level": risk_level(disease, score),
+        "score_note": SCORE_NOTE,
+        "top_factors": factors,
+        "disclaimer": DISCLAIMER,
+        **score_artifacts(disease, "ml"),
+    }
+    if factors is not None:
+        result["factors_note"] = FACTORS_NOTE
+    note = disease_note(disease)
+    if note:
+        result["model_note"] = note
+    out = out_of_training_range(state["schema"], features)
+    if out:
+        result["out_of_training_range"] = out
+        result["range_warning"] = RANGE_WARNING
+    result["population_note"] = state["schema"]["population_note"]
+    return result
+
+
+def dl_result(state, features, scaled):
+    disease = state["disease"]
+    score = float(state["dl_model"].predict(scaled.to_numpy(), verbose=0)[0, 0])
+    result = {
+        "disease": disease,
+        "model_name": "mlp",
+        "model_label": "Neural Network (MLP)",
+        "architecture": "Dense(64) - Dropout(0.3) - Dense(32) - Dropout(0.2)",
+        "risk_score": score,
+        "risk_level": dl_risk_level(disease, score),
+        "score_note": DL_SCORE_NOTE,
+        "top_factors": None,
+        "disclaimer": DISCLAIMER,
+        **score_artifacts(disease, "dl"),
+    }
+    note = disease_note(disease)
+    if note:
+        result["model_note"] = note
+    out = out_of_training_range(state["schema"], features)
+    if out:
+        result["out_of_training_range"] = out
+        result["range_warning"] = RANGE_WARNING
+    result["population_note"] = state["schema"]["population_note"]
+    return result
 
 
 def factor_list(model, scaled):
@@ -151,47 +260,51 @@ def schema(disease: str):
     return ARTIFACTS[disease]["schema"]
 
 
-@app.post("/predict/{disease}")
-def predict(disease: str, body: dict = Body(...)):
+def validated_request(disease, body):
     if disease not in ARTIFACTS:
         raise HTTPException(status_code=404, detail=f"Unknown disease: {disease}")
-
     state = ARTIFACTS[disease]
     try:
         payload = state["request_model"].model_validate(body)
     except ValidationError as exc:
         raise HTTPException(status_code=422, detail=exc.errors())
-
     features = payload.features.model_dump()
-    scaled = preprocess(state, features)
-    model = state["model"]
-    score = float(model.predict_proba(scaled)[0, 1])
-    factors = (
-        factor_list(model, scaled)
-        if state["schema"]["model_name"] == "logreg"
-        else None
-    )
+    return state, features, preprocess(state, features)
 
-    result = {
+
+@app.post("/predict/{disease}")
+def predict(disease: str, body: dict = Body(...)):
+    state, features, scaled = validated_request(disease, body)
+    return ml_result(state, features, scaled)
+
+
+@app.post("/compare/{disease}")
+def compare(disease: str, body: dict = Body(...)):
+    state, features, scaled = validated_request(disease, body)
+    ml = ml_result(state, features, scaled)
+    dl = dl_result(state, features, scaled)
+    same_level = ml["risk_level"] == dl["risk_level"]
+    if same_level:
+        interpretation = f"Both models classify this input as {ml['risk_level']} risk."
+    else:
+        interpretation = (
+            f"ML classifies this input as {ml['risk_level']} risk, while the neural "
+            f"network classifies it as {dl['risk_level']} risk."
+        )
+    comparison = {
+        "score_difference": dl["risk_score"] - ml["risk_score"],
+        "risk_levels_match": same_level,
+        "interpretation": interpretation,
+        "note": COMPARISON_NOTE,
+        "ml_test_roc_auc": ml.get("test_roc_auc"),
+        "dl_test_roc_auc": dl.get("test_roc_auc"),
+        "ml_test_accuracy": ml.get("test_accuracy"),
+        "dl_test_accuracy": dl.get("test_accuracy"),
+    }
+    return {
         "disease": disease,
-        "model_name": state["schema"]["model_name"],
-        "risk_score": score,
-        "risk_level": risk_level(disease, score),
-        "score_note": SCORE_NOTE,
-        "top_factors": factors,
+        "ml": ml,
+        "dl": dl,
+        "comparison": comparison,
         "disclaimer": DISCLAIMER,
     }
-    if factors is not None:
-        result["factors_note"] = FACTORS_NOTE
-    if disease == "diabetes":
-        result["model_note"] = MODEL_NOTE
-    if disease == "alzheimers":
-        result["model_note"] = ALZHEIMERS_MODEL_NOTE
-    if disease == "liver":
-        result["model_note"] = LIVER_MODEL_NOTE
-    out = out_of_training_range(state["schema"], features)
-    if out:
-        result["out_of_training_range"] = out
-        result["range_warning"] = RANGE_WARNING
-    result["population_note"] = state["schema"]["population_note"]
-    return result

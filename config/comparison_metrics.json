@@ -1,0 +1,62 @@
+{
+  "cvd": {
+    "ml": {
+      "model_file": "final_cvd.joblib",
+      "test_roc_auc": 0.8206967213114754,
+      "test_accuracy": 0.6774193548387096,
+      "training_seconds": null
+    },
+    "dl": {
+      "model_file": "mlp_cvd.keras",
+      "cv_roc_auc_mean": 0.735833765560166,
+      "test_roc_auc": 0.795594262295082,
+      "test_accuracy": 0.6774193548387096,
+      "training_seconds": 5.4771757000125945
+    }
+  },
+  "diabetes": {
+    "ml": {
+      "model_file": "final_diabetes_compact.joblib",
+      "test_roc_auc": 0.9547345132743362,
+      "test_accuracy": 0.9281914893617021,
+      "training_seconds": null
+    },
+    "dl": {
+      "model_file": "mlp_diabetes_compact.keras",
+      "cv_roc_auc_mean": 0.935864912002537,
+      "test_roc_auc": 0.9456047197640118,
+      "test_accuracy": 0.901595744680851,
+      "training_seconds": 10.737579999957234
+    }
+  },
+  "alzheimers": {
+    "ml": {
+      "model_file": "final_alzheimers_compact.joblib",
+      "test_roc_auc": 0.6921857251041272,
+      "test_accuracy": 0.6162790697674418,
+      "training_seconds": null
+    },
+    "dl": {
+      "model_file": "mlp_alzheimers_compact.keras",
+      "cv_roc_auc_mean": 0.7213451608318726,
+      "test_roc_auc": 0.7239681938659599,
+      "test_accuracy": 0.6697674418604651,
+      "training_seconds": 7.506818299996667
+    }
+  },
+  "liver": {
+    "ml": {
+      "model_file": "final_liver_full.joblib",
+      "test_roc_auc": 0.9598755723323197,
+      "test_accuracy": 0.9058823529411765,
+      "training_seconds": null
+    },
+    "dl": {
+      "model_file": "mlp_liver_full.keras",
+      "cv_roc_auc_mean": 0.9065486114601248,
+      "test_roc_auc": 0.9152423892908321,
+      "test_accuracy": 0.8294117647058824,
+      "training_seconds": 11.290463599958457
+    }
+  }
+}

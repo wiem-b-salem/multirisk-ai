@@ -106,7 +106,7 @@ describe('Alzheimer\'s pages', () => {
     expect(card.getAttribute('href')).toBe('/predict/alzheimers')
   })
 
-  it('renders the Alzheimer\'s form with raw education codes and BMI inputs', async () => {
+  it('renders the Alzheimer\'s form with education choices and BMI inputs', async () => {
     vi.stubGlobal('fetch', vi.fn(() => jsonResponse(schema)))
     render(
       <MemoryRouter initialEntries={['/predict/alzheimers']}>
@@ -118,11 +118,17 @@ describe('Alzheimer\'s pages', () => {
 
     await screen.findByTestId('predict-form')
     expect(screen.getByTestId('family-history-box')).toBeTruthy()
-    expect(screen.getByLabelText('Weight (kg)')).toBeTruthy()
-    expect(screen.getByLabelText('Height (cm)')).toBeTruthy()
-    const education = screen.getByLabelText('Education level')
+    expect(screen.getByLabelText('Weight')).toBeTruthy()
+    expect(screen.getByLabelText('Height')).toBeTruthy()
+    const education = screen.getByLabelText('What is your highest level of education?')
     expect([...education.options].map((option) => option.value)).toEqual(['', '0', '1', '2', '3'])
-    expect(screen.getByText(/0 to 3 as coded in the dataset/)).toBeTruthy()
-    expect(screen.getByText(/synthetic dataset of 2,149 people/)).toBeTruthy()
+    expect([...education.options].map((option) => option.textContent)).toEqual([
+      'Select...',
+      'None',
+      'High school',
+      "Bachelor's degree",
+      'Higher degree',
+    ])
+    expect(screen.queryByText(/synthetic dataset of 2,149 people/)).toBeNull()
   })
 })
