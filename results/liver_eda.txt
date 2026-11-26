@@ -1,0 +1,69 @@
+﻿Shape: (1700, 11)
+
+Dtypes:
+Age                     int64
+Gender                  int64
+BMI                   float64
+AlcoholConsumption    float64
+Smoking                 int64
+GeneticRisk             int64
+PhysicalActivity      float64
+Diabetes                int64
+Hypertension            int64
+LiverFunctionTest     float64
+Diagnosis               int64
+
+Missing values:
+Age                   0
+Gender                0
+BMI                   0
+AlcoholConsumption    0
+Smoking               0
+GeneticRisk           0
+PhysicalActivity      0
+Diabetes              0
+Hypertension          0
+LiverFunctionTest     0
+Diagnosis             0
+
+Diagnosis distribution:
+Diagnosis
+0    764
+1    936
+Positive rate: 0.5506
+
+GeneticRisk distribution:
+GeneticRisk
+0    978
+1    557
+2    165
+Positive rate by level:
+GeneticRisk
+0    0.5307
+1    0.5009
+2    0.8364
+
+Key column min/max:
+Age: 20 to 80
+Gender: 0 to 1
+BMI: 15.004709988914547 to 39.99284510389785
+AlcoholConsumption: 0.003730563413262278 to 19.952456445027707
+Smoking: 0 to 1
+GeneticRisk: 0 to 2
+PhysicalActivity: 0.0018519529544280822 to 9.994963504187217
+Diabetes: 0 to 1
+Hypertension: 0 to 1
+LiverFunctionTest: 20.01925357943218 to 99.99141333640394
+
+Unique values per column:
+Age                     61
+Gender                   2
+BMI                   1700
+AlcoholConsumption    1700
+Smoking                  2
+GeneticRisk              3
+PhysicalActivity      1700
+Diabetes                 2
+Hypertension             2
+LiverFunctionTest     1700
+Diagnosis                2

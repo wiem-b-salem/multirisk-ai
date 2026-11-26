@@ -16,6 +16,7 @@ DISEASES = {
     "cvd": ("cvd", "cardiovascular"),
     "diabetes": ("diabetes_compact", "diabetes"),
     "alzheimers": ("alzheimers_compact", "alzheimers"),
+    "liver": ("liver_full", "liver"),
 }
 DISCLAIMER = (
     "This is an estimate for academic demonstration, not a medical diagnosis. "
@@ -28,6 +29,10 @@ MODEL_NOTE = (
 ALZHEIMERS_MODEL_NOTE = (
     "This model was trained on a synthetic dataset and relies mainly on MMSE "
     "and MemoryComplaints; results do not reflect real patients."
+)
+LIVER_MODEL_NOTE = (
+    "This model was trained on a synthetic dataset and relies mainly on "
+    "LiverFunctionTest and AlcoholConsumption; results do not reflect real patients."
 )
 SCORE_NOTE = (
     "Model score, not a calibrated probability: models were trained with "
@@ -182,6 +187,8 @@ def predict(disease: str, body: dict = Body(...)):
         result["model_note"] = MODEL_NOTE
     if disease == "alzheimers":
         result["model_note"] = ALZHEIMERS_MODEL_NOTE
+    if disease == "liver":
+        result["model_note"] = LIVER_MODEL_NOTE
     out = out_of_training_range(state["schema"], features)
     if out:
         result["out_of_training_range"] = out

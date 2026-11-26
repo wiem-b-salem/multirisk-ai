@@ -1,0 +1,22 @@
+=== Liver disease (GeneticRisk) ===
+Positive rate by genetic risk level:
+Level 0: n=978, positive=519, rate=0.5307
+Level 1: n=557, positive=279, rate=0.5009
+Level 2: n=165, positive=138, rate=0.8364
+Chi-square across levels 0/1/2: chi2=61.5836, dof=2, p-value=4.23935e-14
+Level 1 vs 0: odds ratio=0.8876, chi-square p-value=0.284769
+Level 2 vs 0: odds ratio=4.5202, chi-square p-value=3.81593e-13
+
+=== Logistic regression coefficients (standardized) ===
+full: 0.4670
+no_lab: 0.3603
+
+=== Added value of GeneticRisk (training CV ROC-AUC) ===
+full with logreg: 0.9037 +/- 0.0153
+full with rf: 0.9370 +/- 0.0116
+full without logreg: 0.8946 +/- 0.0170
+full without rf: 0.9197 +/- 0.0124
+no_lab with logreg: 0.8302 +/- 0.0077
+no_lab with rf: 0.8501 +/- 0.0073
+no_lab without logreg: 0.8216 +/- 0.0083
+no_lab without rf: 0.8388 +/- 0.0084

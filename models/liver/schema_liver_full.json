@@ -1,0 +1,153 @@
+{
+  "raw_fields": [
+    {
+      "name": "Age",
+      "label": "Age",
+      "unit": "years",
+      "help": "Age in years.",
+      "type": "int",
+      "train_min": 20,
+      "train_max": 80,
+      "valid_min": 18,
+      "valid_max": 110
+    },
+    {
+      "name": "Gender",
+      "label": "Gender code",
+      "unit": "",
+      "help": "Coding to be verified on the source page",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "BMI",
+      "label": "Body mass index (BMI)",
+      "unit": "kg/m2",
+      "help": "Weight in kg divided by height in metres squared.",
+      "type": "float",
+      "train_min": 15.004709988914547,
+      "train_max": 39.99284510389785,
+      "valid_min": 10,
+      "valid_max": 70
+    },
+    {
+      "name": "AlcoholConsumption",
+      "label": "Alcohol consumption",
+      "unit": "",
+      "help": "The dataset does not state the unit; values range from 0 to 20",
+      "type": "float",
+      "train_min": 0.003730563413262278,
+      "train_max": 19.952456445027707,
+      "valid_min": 0,
+      "valid_max": 100
+    },
+    {
+      "name": "Smoking",
+      "label": "Smoker",
+      "unit": "",
+      "help": "Whether the person smokes",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "GeneticRisk",
+      "label": "Genetic risk level",
+      "unit": "",
+      "help": "Genetic risk category from 0 to 2 as coded in the dataset. The source does not say how it is determined. This is not a family-history question; meaning to be verified on the source page",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 2,
+      "allowed_values": [
+        0,
+        1,
+        2
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "PhysicalActivity",
+      "label": "Physical activity",
+      "unit": "",
+      "help": "Activity score from 0 to 10 as coded in the dataset; the unit is not stated",
+      "type": "float",
+      "train_min": 0.0018519529544280822,
+      "train_max": 9.994963504187217,
+      "valid_min": 0,
+      "valid_max": 10
+    },
+    {
+      "name": "Diabetes",
+      "label": "Diabetes",
+      "unit": "",
+      "help": "Whether the person has been diagnosed with diabetes.",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "Hypertension",
+      "label": "Hypertension",
+      "unit": "",
+      "help": "Whether the person has been diagnosed with hypertension.",
+      "type": "int",
+      "train_min": 0,
+      "train_max": 1,
+      "allowed_values": [
+        0,
+        1
+      ],
+      "valid_min": null,
+      "valid_max": null
+    },
+    {
+      "name": "LiverFunctionTest",
+      "label": "Liver function test result",
+      "unit": "",
+      "help": "A test value from a blood test; the source does not say which test or unit; values range from 20 to 100",
+      "type": "float",
+      "train_min": 20.01925357943218,
+      "train_max": 99.99141333640394,
+      "valid_min": 0,
+      "valid_max": 300
+    }
+  ],
+  "family_history_field": "GeneticRisk",
+  "family_history_box_title": "Genetic risk (required)",
+  "population_note": "Trained on a synthetic dataset of 1,700 people aged 20-80; not validated on real patients. The genetic risk level is not a family-history question.",
+  "feature_columns": [
+    "Age",
+    "Gender",
+    "BMI",
+    "AlcoholConsumption",
+    "Smoking",
+    "GeneticRisk",
+    "PhysicalActivity",
+    "Diabetes",
+    "Hypertension",
+    "LiverFunctionTest"
+  ],
+  "model_file": "final_liver_full.joblib",
+  "scaler_file": "scaler_liver_full.joblib",
+  "model_name": "rf"
+}
